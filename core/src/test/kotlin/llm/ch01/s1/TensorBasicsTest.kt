@@ -11,4 +11,10 @@ class TensorBasicsTest : FunSpec({
 
         t.size shouldBe 24
     }
+
+    test("a scalar has an empty shape and size 1") {
+        val scalar = Tensor(shape = intArrayOf(), data = doubleArrayOf(42.0))
+
+        scalar.size shouldBe 1
+    }
 })

@@ -33,6 +33,7 @@ Write your code in `core/src/exercise/kotlin/llm/core/Tensor.kt`. Then run:
 Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 
 1. `TensorBasicsTest > size is the product of all dimensions`
+2. `TensorBasicsTest > a scalar has an empty shape and size 1`
 
 ## Done when
 
