@@ -12,7 +12,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     val size: Int
         get() {
             // <exercise ch01-s1> Return the product of all dimensions of the shape.
-            return shape.reduce({ x, y -> x * y })
+            return shape.reduceOrNull { acc, i -> acc * i } ?: data.size
             // </exercise>
         }
 }
