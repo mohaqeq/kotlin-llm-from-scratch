@@ -38,4 +38,12 @@ class TensorBasicsTest : FunSpec({
             Tensor(shape = intArrayOf(2, 0, 3), data = DoubleArray(0))
         }
     }
+
+    test("a negative dimension is rejected") {
+        // The product is 6 and matches the data, but no dimension can be negative.
+        val error = shouldThrow<IllegalArgumentException> {
+            Tensor(shape = intArrayOf(-2, -3), data = DoubleArray(6))
+        }
+        error.message shouldContain "[-2, -3]"
+    }
 })

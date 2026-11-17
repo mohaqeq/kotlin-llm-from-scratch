@@ -35,6 +35,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 1. `TensorBasicsTest > size is the product of all dimensions`
 2. `TensorBasicsTest > a scalar has an empty shape and size 1`
 3. `TensorBasicsTest > the data length must match the shape`
+4. `TensorBasicsTest > a negative dimension is rejected`
 
 ## Done when
 
