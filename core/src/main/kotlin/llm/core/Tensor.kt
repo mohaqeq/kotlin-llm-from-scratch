@@ -8,6 +8,11 @@ package llm.core
  */
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
+    init {
+        // <exercise ch01-s1> Reject data whose length is not the size of the shape.
+        // </exercise>
+    }
+
     /** Number of elements: the product of all dimensions. */
     val size: Int
         get() {
