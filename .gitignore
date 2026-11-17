@@ -9,6 +9,7 @@ build/
 *.iml
 .vscode/
 out/
+bin/
 
 # Learner settings (mode=exercise)
 local.properties
