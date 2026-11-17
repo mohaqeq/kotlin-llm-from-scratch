@@ -10,6 +10,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
 
     init {
         // <exercise ch01-s1> Reject data whose length is not the size of the shape.
+        require(size == data.size) {"shape:${shape.contentToString()} does not match data:${data.size}"}
         // </exercise>
     }
 
