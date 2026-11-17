@@ -2,6 +2,9 @@ name: CI
 
 on:
   push:
+    # Branch pushes only: with only branches-ignore, a tag push does not run CI.
+    # Red-step tags fail on purpose, and start/* branches hold a section starter on purpose.
+    branches-ignore: ["start/**"]
   pull_request:
 
 permissions:
