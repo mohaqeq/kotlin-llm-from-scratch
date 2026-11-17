@@ -1,0 +1,82 @@
+---
+/** The red → green → refactor loop that every section follows. */
+---
+
+<figure class="tdd-loop">
+  <svg viewBox="0 0 640 220" role="img" aria-labelledby="tdd-title tdd-desc">
+    <title id="tdd-title">The TDD loop</title>
+    <desc id="tdd-desc">
+      Three steps in a cycle: write one failing test (red), write the minimal code (green),
+      then refactor with the tests green. Then the next test starts the cycle again.
+    </desc>
+    <defs>
+      <marker id="tdd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+      </marker>
+    </defs>
+
+    <g class="step red">
+      <circle cx="110" cy="100" r="62"></circle>
+      <text x="110" y="94" class="name">RED</text>
+      <text x="110" y="116" class="hint">one failing test</text>
+    </g>
+    <g class="step green">
+      <circle cx="320" cy="100" r="62"></circle>
+      <text x="320" y="94" class="name">GREEN</text>
+      <text x="320" y="116" class="hint">minimal code</text>
+    </g>
+    <g class="step blue">
+      <circle cx="530" cy="100" r="62"></circle>
+      <text x="530" y="94" class="name">REFACTOR</text>
+      <text x="530" y="116" class="hint">tests stay green</text>
+    </g>
+
+    <g class="arrows">
+      <path d="M176 100 H250" marker-end="url(#tdd-arrow)"></path>
+      <path d="M386 100 H460" marker-end="url(#tdd-arrow)"></path>
+      <path d="M530 166 C530 214 110 214 110 170" marker-end="url(#tdd-arrow)"></path>
+    </g>
+    <text x="320" y="212" class="hint">next behaviour → next test</text>
+  </svg>
+</figure>
+
+<style>
+  .tdd-loop {
+    margin: 1.5rem 0;
+  }
+  svg {
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    display: block;
+    margin-inline: auto;
+    color: var(--sl-color-gray-3);
+  }
+  .step circle {
+    fill: var(--sl-color-black);
+    stroke-width: 3;
+  }
+  .red circle { stroke: var(--kl-red); }
+  .green circle { stroke: var(--kl-green); }
+  .blue circle { stroke: var(--kl-blue); }
+  .red .name { fill: var(--kl-red); }
+  .green .name { fill: var(--kl-green); }
+  .blue .name { fill: var(--kl-blue); }
+  text {
+    text-anchor: middle;
+    font-family: var(--sl-font-mono);
+  }
+  .name {
+    font-size: 19px;
+    font-weight: 700;
+  }
+  .hint {
+    font-size: 12.5px;
+    fill: var(--sl-color-gray-2);
+  }
+  .arrows path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+</style>

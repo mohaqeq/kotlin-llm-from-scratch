@@ -1,0 +1,80 @@
+---
+/**
+ * The chapter map on the landing page. It reads each chapter overview page
+ * (chNN/index) and shows its title, description and status.
+ */
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const chapters = (await getCollection('docs', (d) => /^ch\d{2}$/.test(d.id))).sort((a, b) =>
+  a.id.localeCompare(b.id),
+);
+
+const label = { done: 'Done', 'in-progress': 'In progress', planned: 'Planned' } as const;
+---
+
+<ol class="chapter-map">
+  {
+    chapters.map((c) => (
+      <li class="kl-card">
+        <a href={`${base}/${c.id}/`}>
+          <span class="number">{c.id.replace('ch0', 'Chapter ')}</span>
+          <span class="title">{c.data.title}</span>
+        </a>
+        <p>{c.data.description}</p>
+        <span class:list={['status', c.data.status]}>{label[c.data.status]}</span>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .chapter-map {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1rem;
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin: 0;
+  }
+  a {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .number {
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sl-color-accent);
+  }
+  .title {
+    font-family: var(--kl-font-display);
+    font-size: var(--sl-text-xl);
+    font-weight: 600;
+    color: var(--sl-color-white);
+  }
+  p {
+    margin: 0;
+    font-size: var(--sl-text-sm);
+    color: var(--sl-color-gray-2);
+    flex: 1;
+  }
+  .status {
+    align-self: flex-start;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+  }
+  .status.done { color: var(--kl-green); }
+  .status.in-progress { color: var(--kl-red); }
+  .status.planned { color: var(--sl-color-gray-3); }
+</style>

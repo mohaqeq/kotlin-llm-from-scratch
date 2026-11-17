@@ -1,0 +1,43 @@
+---
+title: Kotlin LLM from Scratch
+description: Build a GPT-style language model in pure Kotlin, one failing test at a time.
+template: splash
+hero:
+  title: Build a GPT in Kotlin, one failing test at a time
+  tagline: No Python, no deep-learning framework. Only Kotlin, a tensor class that you write, and a test suite that tells you when you are right.
+  actions:
+    - text: Start with Chapter 1
+      link: ch01/
+      icon: right-arrow
+    - text: How to learn with this site
+      link: how-to-learn/
+      variant: minimal
+    - text: Source on GitHub
+      link: https://github.com/mohaqeq/kotlin-llm-from-scratch
+      icon: external
+      variant: minimal
+---
+
+import TddLoop from '../../components/TddLoop.astro';
+import ChapterMap from '../../components/ChapterMap.astro';
+
+## Every step is a test
+
+I build each part of the model with test-driven development.
+First I write one small test that fails. Then I write the minimum code that makes it pass.
+Then I clean up the code while all tests stay green.
+
+<TddLoop />
+
+You can do the same. Each section has a starter state with the tests and empty `TODO()` functions.
+You can start at any section, because the starter contains the finished code of all earlier sections.
+
+```sh
+git clone https://github.com/mohaqeq/kotlin-llm-from-scratch.git
+cd kotlin-llm-from-scratch
+./gradlew startSection -Psection=ch01-s1   # resets the exercise and shows RED
+```
+
+## The chapters
+
+<ChapterMap />

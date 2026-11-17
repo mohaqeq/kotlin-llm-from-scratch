@@ -1,0 +1,110 @@
+/*
+ * Theme "Lab notebook": warm paper, deep-teal ink, serif headings, monospace code.
+ * Starlight uses its default :root values for dark mode and
+ * :root[data-theme='light'] for light mode.
+ */
+
+:root {
+  --sl-font: 'Source Serif 4 Variable', 'Iowan Old Style', Georgia, serif;
+  --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', monospace;
+  --kl-font-display: 'Fraunces Variable', Georgia, serif;
+  --sl-text-body: 1.0625rem;
+  --sl-line-height: 1.7;
+
+  /* Test states, used by the TDD components. */
+  --kl-red: #e0785e;
+  --kl-green: #7fbf7a;
+  --kl-blue: #8fb8de;
+
+  /* Dark mode: a teal-black desk with paper-coloured ink. */
+  --sl-color-accent-low: #0f3b39;
+  --sl-color-accent: #3fa79c;
+  --sl-color-accent-high: #c4ebe4;
+  --sl-color-white: #f5eedf;
+  --sl-color-gray-1: #e7ddc9;
+  --sl-color-gray-2: #cbc1ab;
+  --sl-color-gray-3: #9d9580;
+  --sl-color-gray-4: #615c4f;
+  --sl-color-gray-5: #3a3b33;
+  --sl-color-gray-6: #1d2a2b;
+  --sl-color-black: #131d1e;
+}
+
+:root[data-theme='light'] {
+  --kl-red: #a8402a;
+  --kl-green: #2f6f34;
+  --kl-blue: #2f5f8a;
+
+  --sl-color-accent-low: #cfe6e0;
+  --sl-color-accent: #0e5e5a;
+  --sl-color-accent-high: #083b38;
+  --sl-color-white: #1d2729;
+  --sl-color-gray-1: #2b393b;
+  --sl-color-gray-2: #3e4a4b;
+  --sl-color-gray-3: #6a6d66;
+  --sl-color-gray-4: #9a988b;
+  --sl-color-gray-5: #d9cfba;
+  --sl-color-gray-6: #ebe2cd;
+  --sl-color-gray-7: #f2ebdb;
+  --sl-color-black: #f8f3e7;
+}
+
+/* Serif display headings. */
+h1#_top,
+.hero h1,
+.sl-markdown-content :is(h1, h2, h3, h4),
+.site-title {
+  font-family: var(--kl-font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
+}
+
+.sl-markdown-content :is(h2, h3) {
+  font-weight: 600;
+}
+
+.site-title {
+  font-weight: 650;
+  color: var(--sl-color-accent-high);
+}
+
+/* A thin rule under page titles, like a notebook header. */
+h1#_top {
+  font-weight: 700;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--sl-color-accent);
+  display: inline-block;
+}
+
+/* Faint ruled-paper lines on the landing page only. */
+[data-has-hero] .main-frame {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    color-mix(in srgb, var(--sl-color-accent) 9%, transparent) 32px
+  );
+}
+
+.hero h1 {
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  line-height: 1.05;
+  color: var(--sl-color-white);
+}
+
+.hero .tagline {
+  font-style: italic;
+}
+
+/* Code: slightly softer corners and a teal edge. */
+.sl-markdown-content .expressive-code .frame {
+  border-left: 3px solid var(--sl-color-accent);
+}
+
+/* Shared card style for landing components. */
+.kl-card {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--sl-color-black) 85%, var(--sl-color-accent-low));
+  padding: 1rem 1.1rem;
+}

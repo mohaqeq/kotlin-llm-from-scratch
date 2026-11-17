@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  solution:
+    name: Solution tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Build and test the solution (also compiles src/exercise)
+        run: ./gradlew build
+
+      - name: Committed exercises are the generated starter state
+        run: |
+          ./gradlew resetExercise
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::src/exercise is not in sync with src/main. Run ./gradlew resetExercise and commit."
+            git status --porcelain
+            git diff
+            exit 1
+          fi
+
+  starters:
+    name: Starter states
+    needs: solution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Every section starter compiles and fails only with TODO()
+        run: |
+          sections=$(./gradlew -q listSections)
+          echo "Sections with tests: ${sections:-none}"
+          for s in $sections; do
+            echo "::group::$s"
+            ./gradlew verifyExercise -Psection="$s"
+            echo "::endgroup::"
+          done

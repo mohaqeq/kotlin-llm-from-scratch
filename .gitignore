@@ -1,0 +1,28 @@
+# Gradle and Kotlin
+.gradle/
+build/
+.kotlin/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+out/
+
+# Learner settings (mode=exercise)
+local.properties
+
+# Site
+site/node_modules/
+site/dist/
+site/.astro/
+
+# Large model files (downloaded in Chapter 6)
+*.safetensors
+*.bin
+checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
