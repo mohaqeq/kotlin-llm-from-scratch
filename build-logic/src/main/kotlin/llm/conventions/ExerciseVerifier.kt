@@ -8,7 +8,8 @@ import javax.xml.parsers.DocumentBuilderFactory
  * Reads the JUnit XML results of a test run on a starter state and checks the rules:
  *
  * - Tests of earlier sections pass (the starter has their solution).
- * - Tests of the target section fail, and only with NotImplementedError (from TODO()).
+ * - Tests of the target section fail, and only with NotImplementedError (from TODO()),
+ *   directly or as the cause of an assertion error.
  *   At least one of them fails, so the exercise is not solved already.
  * - Tests of later sections pass or fail with NotImplementedError.
  */
@@ -16,7 +17,17 @@ object ExerciseVerifier {
     private const val TODO_ERROR = "kotlin.NotImplementedError"
     private val sectionOfClass = Regex("""^llm\.ch(\d{2})\.s(\d+)\.""")
 
-    private data class Case(val className: String, val name: String, val failureType: String?, val skipped: Boolean)
+    private data class Case(
+        val className: String,
+        val name: String,
+        val failureType: String?,
+        val failureText: String,
+        val skipped: Boolean,
+    ) {
+        /** TODO() failed here: directly, or as the cause of an assertion error (for example in shouldThrow). */
+        val isTodo: Boolean
+            get() = failureType == TODO_ERROR || "Caused by: $TODO_ERROR" in failureText
+    }
 
     fun verify(resultsDir: File, target: SectionId) {
         val cases = readCases(resultsDir)
@@ -31,12 +42,12 @@ object ExerciseVerifier {
             when {
                 section < target && c.failureType != null ->
                     problems += "$label: earlier section must pass in the starter, but failed with ${c.failureType}"
-                section == target && c.failureType != null && c.failureType != TODO_ERROR ->
+                section == target && c.failureType != null && !c.isTodo ->
                     problems += "$label: must fail only with $TODO_ERROR, but failed with ${c.failureType}"
-                section > target && c.failureType != null && c.failureType != TODO_ERROR ->
+                section > target && c.failureType != null && !c.isTodo ->
                     problems += "$label: later section failed with ${c.failureType}"
             }
-            if (section == target && c.failureType == TODO_ERROR) targetFailures++
+            if (section == target && c.failureType != null && c.isTodo) targetFailures++
         }
         if (targetFailures == 0) problems += "No test of $target fails: the starter state looks solved already."
         if (problems.isNotEmpty()) {
@@ -58,6 +69,7 @@ object ExerciseVerifier {
                     className = el.getAttribute("classname"),
                     name = el.getAttribute("name"),
                     failureType = failure?.getAttribute("type")?.ifBlank { "unknown" },
+                    failureText = failure?.textContent.orEmpty(),
                     skipped = el.getElementsByTagName("skipped").length > 0,
                 )
             }

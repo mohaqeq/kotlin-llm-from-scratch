@@ -4,19 +4,13 @@ import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
-import org.gradle.api.attributes.Bundling
-import org.gradle.api.attributes.Category
-import org.gradle.api.attributes.LibraryElements
-import org.gradle.api.attributes.Usage
 import org.gradle.api.plugins.JavaApplication
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.io.File
@@ -29,9 +23,9 @@ import java.util.Properties
  * - `src/main/kotlin`     the solution,
  * - `src/exercise/kotlin` the learner's code (starts as skeletons with TODO()).
  *
- * The mode decides which folder is the Gradle `main` source set, so the tests
- * and `run` use it. Other modules always use the *solution* of earlier
- * chapters (configuration `solutionElements`), never the learner's code.
+ * The mode decides which folder the tests and `run` use. `main` is always the
+ * solution, so other modules always use the solution of earlier chapters,
+ * never the learner's code.
  */
 class ChapterPlugin : Plugin<Project> {
 
@@ -59,67 +53,61 @@ class ChapterPlugin : Plugin<Project> {
         }
         val isTarget = requested == null || requested.chapter == chapter.number
 
-        // Each mode has its own build folder. Both modes compile files with the same relative
-        // paths (llm/core/Tensor.kt) in the same task, so a shared folder lets Kotlin incremental
-        // compilation keep the class files of the other mode.
-        if (mode == Mode.EXERCISE) layout.buildDirectory.set(layout.projectDirectory.dir("build/exercise-mode"))
-
         val kotlin = extensions.getByType<KotlinJvmProjectExtension>()
         kotlin.jvmToolchain(25)
 
-        // --- Source sets: which folder is "main" depends on the mode -------------
+        // --- Source sets ---------------------------------------------------------
+        // No task changes its sources with the mode. Gradle keeps one execution history per
+        // task; a task with mode-dependent sources deletes the other mode's outputs.
+        //   main          = src/main/kotlin      (solution; other chapters use it)
+        //   exercise      = src/exercise/kotlin  (learner; always compiled by "check")
+        //   exerciseTest  = src/test/kotlin compiled against exercise (exercise mode only)
         val sourceSets = extensions.getByType<SourceSetContainer>()
         val solutionDir = "src/main/kotlin"
         val exerciseDir = "src/exercise/kotlin"
-        val otherName = if (mode == Mode.SOLUTION) "exercise" else "solution"
-        kotlin.sourceSets.getByName("main").kotlin.setSrcDirs(
-            listOf(if (mode == Mode.SOLUTION) solutionDir else exerciseDir),
-        )
-        val other = sourceSets.create(otherName)
-        other.resources.setSrcDirs(emptyList<File>())
-        kotlin.sourceSets.getByName(otherName).kotlin.setSrcDirs(
-            listOf(if (mode == Mode.SOLUTION) exerciseDir else solutionDir),
-        )
-        configurations.getByName("${otherName}Implementation").extendsFrom(configurations.getByName("implementation"))
-        configurations.getByName("${otherName}RuntimeOnly").extendsFrom(configurations.getByName("runtimeOnly"))
-        // "check" always compiles both folders: the exercise code must compile too.
-        tasks.named("check") { dependsOn(other.classesTaskName) }
+        val exercise = sourceSets.create("exercise")
+        exercise.resources.setSrcDirs(emptyList<File>())
+        kotlin.sourceSets.getByName("exercise").kotlin.setSrcDirs(listOf(exerciseDir))
+        configurations.getByName("exerciseImplementation").extendsFrom(configurations.getByName("implementation"))
+        configurations.getByName("exerciseRuntimeOnly").extendsFrom(configurations.getByName("runtimeOnly"))
+        tasks.named("check") { dependsOn(exercise.classesTaskName) }
 
-        // --- Export the solution to later chapters ------------------------------
-        val solutionSourceSet = if (mode == Mode.SOLUTION) sourceSets.getByName("main") else other
-        val solutionJar = tasks.register<Jar>("solutionJar") {
-            archiveClassifier.set("solution")
-            from(solutionSourceSet.output)
-        }
-        configurations.create("solutionElements") {
-            isCanBeConsumed = true
-            isCanBeResolved = false
-            extendsFrom(configurations.getByName("implementation"), configurations.getByName("runtimeOnly"))
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage::class.java, Usage.JAVA_RUNTIME))
-                attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category::class.java, Category.LIBRARY))
-                attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements::class.java, LibraryElements.JAR))
-                attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class.java, Bundling.EXTERNAL))
-            }
-            outgoing.artifact(solutionJar)
-        }
-
-        // --- Dependencies -------------------------------------------------------
+        // --- Dependencies: the solution (main) of every earlier chapter ------------
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
         dependencies.apply {
             Curriculum.chapters.filter { it.number < chapter.number }.forEach { earlier ->
-                add("implementation", project(mapOf("path" to earlier.projectPath, "configuration" to "solutionElements")))
+                add("implementation", project(earlier.projectPath))
             }
             listOf("kotest-runner", "kotest-assertions", "kotest-property").forEach {
                 add("testImplementation", libs.findLibrary(it).get())
             }
         }
 
+        // In exercise mode, the tests compile against src/exercise. src/test moves from the
+        // "test" source set to "exerciseTest", so no folder is in two source sets (IDE import).
+        val exerciseTest = if (mode == Mode.EXERCISE) {
+            kotlin.sourceSets.getByName("test").kotlin.setSrcDirs(emptyList<File>())
+            sourceSets.create("exerciseTest").also { st ->
+                st.resources.setSrcDirs(listOf("src/test/resources"))
+                sourceSets.getByName("test").resources.setSrcDirs(emptyList<File>())
+                kotlin.sourceSets.getByName("exerciseTest").kotlin.setSrcDirs(listOf("src/test/kotlin"))
+                configurations.getByName("exerciseTestImplementation").extendsFrom(configurations.getByName("testImplementation"))
+                configurations.getByName("exerciseTestRuntimeOnly").extendsFrom(configurations.getByName("testRuntimeOnly"))
+                // Tests may use `internal` members, as with main.
+                kotlin.target.compilations.getByName("exerciseTest")
+                    .associateWith(kotlin.target.compilations.getByName("exercise"))
+            }
+        } else null
+
         // --- Tests --------------------------------------------------------------
         val verifying = "verifyExercise" in taskNames
         tasks.withType<Test>().configureEach {
             useJUnitPlatform()
             enabled = isTarget
+            if (exerciseTest != null) {
+                testClassesDirs = exerciseTest.output.classesDirs
+                classpath = exerciseTest.runtimeClasspath
+            }
             requested?.let { filter.includeTestsMatching("${it.packageName}.*") }
             ignoreFailures = verifying
             // The verifier must read results of a fresh run, never old ones.
@@ -139,6 +127,7 @@ class ChapterPlugin : Plugin<Project> {
         tasks.named<JavaExec>("run") {
             enabled = isTarget
             workingDir = rootDir // so code can read data/ with a relative path
+            if (mode == Mode.EXERCISE) classpath = exercise.runtimeClasspath
         }
 
         // --- Learning tasks -----------------------------------------------------

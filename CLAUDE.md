@@ -55,15 +55,17 @@ site/                  Astro + Starlight site (theme in site/src/styles/theme.cs
 
 ## Build mechanics
 
-- `-Pmode=exercise` (or `mode=exercise` in git-ignored `local.properties`) makes `src/exercise` the `main`
-  source set of every module. `startSection` and `verifyExercise` always use exercise mode.
-- Exercise mode uses the build folder `build/exercise-mode`. Both modes compile files with the same relative paths in
-  the same `compileKotlin` task; a shared folder made Kotlin incremental compilation keep the other mode's classes.
-  The Gradle build cache and Kotlin incremental compilation are off (`gradle.properties`) for the same reason, and so
-  that learners always see tests run. `verifyExercise` always reruns the tests.
+- Source sets: `main` = `src/main/kotlin` (solution, always), `exercise` = `src/exercise/kotlin` (always compiled by
+  `check`). With `-Pmode=exercise` (or `mode=exercise` in git-ignored `local.properties`), `src/test` moves to an
+  `exerciseTest` source set that compiles against `exercise`, and the `test` and `run` tasks use it.
+  `startSection` and `verifyExercise` always use exercise mode.
+- Rule: no task may change its sources with the mode. Gradle keeps one execution history per task path and deletes the
+  previous outputs, so a mode-dependent `compileKotlin` deleted the other mode's classes (NoClassDefFoundError).
+- The Gradle build cache is off (`gradle.properties`), so that learners always see the tests run.
+  `verifyExercise` always reruns the tests.
 - In shell chains, check the exit code of `verifyExercise`, not its output text, before you commit or push.
-- Modules depend on the **solution** of all earlier chapters through the `solutionElements` configuration.
-  The plugin adds these dependencies automatically from `Curriculum.kt`.
+- Modules depend on `main` (the solution) of all earlier chapters with normal project dependencies.
+  The plugin adds them automatically from `Curriculum.kt`.
 - `-Psection=chNN-sM` filters tests to package `llm.chNN.sM` and selects the `run` main class.
 - Exercise markers in `src/main`:
   - `// <exercise chNN-sM> hint` … `// </exercise>` becomes `TODO("chNN-sM: hint")` for section M and later.
@@ -71,7 +73,7 @@ site/                  Astro + Starlight site (theme in site/src/styles/theme.cs
   - Put markers inside function bodies (complete statements). No nesting.
 - After every change in `src/main`: `./gradlew resetExercise` and commit `src/exercise`.
 - `./gradlew verifyExercise -Psection=<id>`: the starter compiles, earlier sections pass, the section fails only with
-  `NotImplementedError`. CI runs it for every id from `./gradlew -q listSections`.
+  `NotImplementedError` (directly, or as `Caused by:` of an assertion error, for example in `shouldThrow`). CI runs it for every id from `./gradlew -q listSections`.
 - Starter branches `start/chNN-sM`: made from `main` with `./gradlew resetExercise -Psection=chNN-sM` committed on top.
 
 ## Technical decisions
