@@ -57,6 +57,9 @@ site/                  Astro + Starlight site (theme in site/src/styles/theme.cs
 
 - `-Pmode=exercise` (or `mode=exercise` in git-ignored `local.properties`) makes `src/exercise` the `main`
   source set of every module. `startSection` and `verifyExercise` always use exercise mode.
+- Exercise mode uses the build folder `build/exercise-mode`. Both modes compile files with the same relative paths in
+  the same `compileKotlin` task; a shared folder made Kotlin incremental compilation keep the other mode's classes.
+  The Gradle build cache is off (`gradle.properties`) for the same reason, and so that learners always see tests run.
 - Modules depend on the **solution** of all earlier chapters through the `solutionElements` configuration.
   The plugin adds these dependencies automatically from `Curriculum.kt`.
 - `-Psection=chNN-sM` filters tests to package `llm.chNN.sM` and selects the `run` main class.

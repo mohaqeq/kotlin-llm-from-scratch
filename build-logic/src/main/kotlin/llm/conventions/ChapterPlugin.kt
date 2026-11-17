@@ -59,6 +59,11 @@ class ChapterPlugin : Plugin<Project> {
         }
         val isTarget = requested == null || requested.chapter == chapter.number
 
+        // Each mode has its own build folder. Both modes compile files with the same relative
+        // paths (llm/core/Tensor.kt) in the same task, so a shared folder lets Kotlin incremental
+        // compilation keep the class files of the other mode.
+        if (mode == Mode.EXERCISE) layout.buildDirectory.set(layout.projectDirectory.dir("build/exercise-mode"))
+
         val kotlin = extensions.getByType<KotlinJvmProjectExtension>()
         kotlin.jvmToolchain(25)
 
