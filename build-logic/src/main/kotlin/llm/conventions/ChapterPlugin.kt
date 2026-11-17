@@ -122,6 +122,8 @@ class ChapterPlugin : Plugin<Project> {
             enabled = isTarget
             requested?.let { filter.includeTestsMatching("${it.packageName}.*") }
             ignoreFailures = verifying
+            // The verifier must read results of a fresh run, never old ones.
+            if (verifying) outputs.upToDateWhen { false }
             testLogging {
                 events("passed", "failed", "skipped")
                 exceptionFormat = TestExceptionFormat.SHORT
