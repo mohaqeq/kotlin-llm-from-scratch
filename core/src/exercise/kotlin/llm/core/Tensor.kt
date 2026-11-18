@@ -8,8 +8,10 @@ package llm.core
  */
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
+    private var _size: Int = -1
+
     init {
-        TODO("ch01-s1: Reject data whose length is not the size of the shape.")
+        TODO("ch01-s1: Reject a negative dimension, then data whose length is not the size of the shape.")
     }
 
     /** Number of elements: the product of all dimensions. */

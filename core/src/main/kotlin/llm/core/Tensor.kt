@@ -8,9 +8,12 @@ package llm.core
  */
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
+    private var _size: Int = -1
+
     init {
-        // <exercise ch01-s1> Reject data whose length is not the size of the shape.
-        require(size == data.size) {"shape:${shape.contentToString()} does not match data:${data.size}"}
+        // <exercise ch01-s1> Reject a negative dimension, then data whose length is not the size of the shape.
+        require(shape.all { it >= 0 }) { "Shape must be non-negative but was ${shape.contentToString()}" }
+        require(size == data.size) { "Shape ${shape.contentToString()} needs $size values, but data has ${data.size}" }
         // </exercise>
     }
 
@@ -18,7 +21,12 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     val size: Int
         get() {
             // <exercise ch01-s1> Return the product of all dimensions of the shape.
-            return shape.fold(1) { acc, d -> acc * d }
+            return if (_size > -1) {
+                _size
+            } else {
+                _size = shape.fold(1) { acc, d -> acc * d }
+                _size
+            }
             // </exercise>
         }
 }
