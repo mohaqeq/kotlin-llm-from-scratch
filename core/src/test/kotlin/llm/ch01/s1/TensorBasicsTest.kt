@@ -46,4 +46,11 @@ class TensorBasicsTest : FunSpec({
         }
         error.message shouldContain "[-2, -3]"
     }
+
+    test("a shape whose size overflows Int is rejected") {
+        // 65536 * 65536 = 2^32 wraps to 0 in Int, so empty data would pass a plain length check.
+        shouldThrow<ArithmeticException> {
+            Tensor(shape = intArrayOf(65536, 65536), data = DoubleArray(0))
+        }
+    }
 })

@@ -36,6 +36,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 2. `TensorBasicsTest > a scalar has an empty shape and size 1`
 3. `TensorBasicsTest > the data length must match the shape`
 4. `TensorBasicsTest > a negative dimension is rejected`
+5. `TensorBasicsTest > a shape whose size overflows Int is rejected`
 
 ## Done when
 

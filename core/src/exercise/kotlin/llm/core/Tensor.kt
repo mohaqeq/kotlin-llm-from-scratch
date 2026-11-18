@@ -8,15 +8,12 @@ package llm.core
  */
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
-    private var _size: Int = -1
+    /** Number of elements: the product of all dimensions. */
+    val size: Int by lazy {
+        TODO("ch01-s1: Return the product of all dimensions of the shape.")
+    }
 
     init {
         TODO("ch01-s1: Reject a negative dimension, then data whose length is not the size of the shape.")
     }
-
-    /** Number of elements: the product of all dimensions. */
-    val size: Int
-        get() {
-            TODO("ch01-s1: Return the product of all dimensions of the shape.")
-        }
 }
