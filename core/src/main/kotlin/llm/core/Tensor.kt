@@ -21,4 +21,15 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         require(size == data.size) { "Shape ${shape.contentToString()} needs $size values, but data has ${data.size}" }
         // </exercise>
     }
+
+    /**
+     * Row-major strides: `strides[k]` is how many positions in [data] one step in dimension k moves.
+     * For shape [2, 3, 4] the strides are [12, 4, 1].
+     */
+    val strides: IntArray
+        get() {
+            // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
+            TODO("ch01-s1: compute row-major strides")
+            // </exercise>
+        }
 }

@@ -37,6 +37,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 3. `TensorBasicsTest > the data length must match the shape`
 4. `TensorBasicsTest > a negative dimension is rejected`
 5. `TensorBasicsTest > a shape whose size overflows Int is rejected`
+6. `TensorBasicsTest > row-major strides: the last dimension moves fastest`
 
 ## Done when
 

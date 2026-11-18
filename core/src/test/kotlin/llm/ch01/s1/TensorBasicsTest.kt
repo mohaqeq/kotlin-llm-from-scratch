@@ -53,4 +53,10 @@ class TensorBasicsTest : FunSpec({
             Tensor(shape = intArrayOf(65536, 65536), data = DoubleArray(0))
         }
     }
+
+    test("row-major strides: the last dimension moves fastest") {
+        Tensor(shape = intArrayOf(2, 3, 4), data = DoubleArray(24)).strides shouldBe intArrayOf(12, 4, 1)
+        Tensor(shape = intArrayOf(5), data = DoubleArray(5)).strides shouldBe intArrayOf(1)
+        Tensor(shape = intArrayOf(), data = doubleArrayOf(7.0)).strides shouldBe intArrayOf()
+    }
 })
