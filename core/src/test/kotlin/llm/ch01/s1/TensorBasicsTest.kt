@@ -74,4 +74,18 @@ class TensorBasicsTest : FunSpec({
         t[1, 0, 2] shouldBe 14.0
         t[1, 2, 3] shouldBe 23.0
     }
+
+    test("a wrong index is rejected, not read from another position") {
+        val m = Tensor(shape = intArrayOf(2, 3), data = DoubleArray(6))
+
+        // Without a check, [0, 3] is position 3, which is the element [1, 0].
+        val error = shouldThrow<IndexOutOfBoundsException> { m[0, 3] }
+        error.message shouldContain "[0, 3]"
+        error.message shouldContain "[2, 3]"
+        shouldThrow<IndexOutOfBoundsException> { m[-1, 0] }
+
+        // The number of indices must be the number of dimensions.
+        shouldThrow<IllegalArgumentException> { m[1] }
+        shouldThrow<IllegalArgumentException> { m[0, 0, 0] }
+    }
 })
