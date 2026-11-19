@@ -4,6 +4,7 @@ import io.kotest.assertions.throwables.shouldNotThrowAny
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.kotest.matchers.string.shouldContain
 import llm.core.Tensor
 
@@ -115,5 +116,26 @@ class TensorBasicsTest : FunSpec({
 
         // No dimensions: a scalar with one value.
         Tensor.ones().data.toList() shouldBe listOf(1.0)
+    }
+
+    test("reshape makes a view with a new shape that shares the data") {
+        // 1 2 3        1 2
+        // 4 5 6   ->   3 4
+        //              5 6
+        val t = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        val r = t.reshape(3, 2)
+
+        r.shape shouldBe intArrayOf(3, 2)
+        r.strides shouldBe intArrayOf(2, 1)
+        r[1, 0] shouldBe 3.0
+        r[2, 1] shouldBe 6.0
+
+        // A view shares the data: no copy, and a write through the view changes the original.
+        r.data shouldBeSameInstanceAs t.data
+        r[0, 1] = 20.0
+        t[0, 1] shouldBe 20.0
+
+        // The number of elements must stay the same.
+        shouldThrow<IllegalArgumentException> { t.reshape(4, 2) }
     }
 })

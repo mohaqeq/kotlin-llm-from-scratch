@@ -35,6 +35,14 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         TODO("ch01-s1: Check the index as in get, then write the value at its position in data.")
     }
 
+    /**
+     * A view with a new shape and the same [data]: no values are copied, so a write through
+     * the view changes this tensor too. The new shape must have the same size.
+     */
+    fun reshape(vararg newShape: Int): Tensor {
+        TODO("ch01-s1: Return a tensor with the new shape that shares this data.")
+    }
+
 
     companion object {
         /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */

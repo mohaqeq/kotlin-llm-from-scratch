@@ -52,6 +52,16 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         // </exercise>
     }
 
+    /**
+     * A view with a new shape and the same [data]: no values are copied, so a write through
+     * the view changes this tensor too. The new shape must have the same size.
+     */
+    fun reshape(vararg newShape: Int): Tensor {
+        // <exercise ch01-s1> Return a tensor with the new shape that shares this data.
+        TODO("ch01-s1: make a view with a new shape")
+        // </exercise>
+    }
+
     // <solution-only ch01-s1>
     /** Checks [index] against the shape and returns its position in [data]. */
     private fun positionOf(index: IntArray): Int {
