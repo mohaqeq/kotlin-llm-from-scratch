@@ -37,4 +37,11 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         result
         // </exercise>
     }
+
+    /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
+    operator fun get(vararg index: Int): Double {
+        // <exercise ch01-s1> Find the position of the index in data with the strides, and return that value.
+        TODO("ch01-s1: read one element through the strides")
+        // </exercise>
+    }
 }

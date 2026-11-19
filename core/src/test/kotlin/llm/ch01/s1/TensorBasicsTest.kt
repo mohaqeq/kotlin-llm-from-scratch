@@ -59,4 +59,19 @@ class TensorBasicsTest : FunSpec({
         Tensor(shape = intArrayOf(5), data = DoubleArray(5)).strides shouldBe intArrayOf(1)
         Tensor(shape = intArrayOf(), data = doubleArrayOf(7.0)).strides shouldBe intArrayOf()
     }
+
+    test("an element is read through the strides") {
+        // 1 2 3
+        // 4 5 6
+        val m = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        m[0, 0] shouldBe 1.0
+        m[0, 2] shouldBe 3.0
+        m[1, 0] shouldBe 4.0
+        m[1, 2] shouldBe 6.0
+
+        // data = 0, 1, ..., 23; element (i, j, k) is at 12*i + 4*j + k
+        val t = Tensor(shape = intArrayOf(2, 3, 4), data = DoubleArray(24) { it.toDouble() })
+        t[1, 0, 2] shouldBe 14.0
+        t[1, 2, 3] shouldBe 23.0
+    }
 })

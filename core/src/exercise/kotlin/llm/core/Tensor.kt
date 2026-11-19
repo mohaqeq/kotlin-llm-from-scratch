@@ -24,4 +24,9 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     val strides: IntArray = run {
         TODO("ch01-s1: Compute row-major strides: the last dimension has stride 1.")
     }
+
+    /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
+    operator fun get(vararg index: Int): Double {
+        TODO("ch01-s1: Find the position of the index in data with the strides, and return that value.")
+    }
 }
