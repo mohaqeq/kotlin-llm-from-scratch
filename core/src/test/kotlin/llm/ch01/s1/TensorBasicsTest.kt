@@ -188,4 +188,16 @@ class TensorBasicsTest : FunSpec({
         c.data.toList() shouldBe listOf(1.0, 4.0, 2.0, 5.0, 3.0, 6.0)
         c.data shouldNotBeSameInstanceAs t.data
     }
+
+    test("reshape of a non-contiguous view keeps the row-major order of the view") {
+        // The transpose reads row by row as 1 4 2 5 3 6, so its reshape to [6] must too.
+        val t = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        val flat = t.transpose(0, 1).reshape(6)
+
+        flat.shape shouldBe intArrayOf(6)
+        (0 until 6).map { flat[it] } shouldBe listOf(1.0, 4.0, 2.0, 5.0, 3.0, 6.0)
+
+        // A contiguous tensor still reshapes without a copy.
+        t.reshape(3, 2).data shouldBeSameInstanceAs t.data
+    }
 })

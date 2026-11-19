@@ -46,6 +46,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 12. `TensorBasicsTest > transpose swaps two dimensions by swapping their strides, without a copy`
 13. `TensorBasicsTest > transpose rejects a dimension number that the tensor does not have`
 14. `TensorBasicsTest > contiguous copies a view into row-major order; a contiguous tensor returns itself`
+15. `TensorBasicsTest > reshape of a non-contiguous view keeps the row-major order of the view`
 
 ## Done when
 
