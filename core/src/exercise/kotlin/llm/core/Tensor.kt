@@ -9,7 +9,7 @@ package llm.core
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
     /** Number of elements: the product of all dimensions. */
-    val size: Int by lazy {
+    val size: Int = run {
         TODO("ch01-s1: Return the product of all dimensions of the shape.")
     }
 

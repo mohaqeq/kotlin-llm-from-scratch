@@ -9,7 +9,7 @@ package llm.core
 class Tensor(val shape: IntArray, val data: DoubleArray) {
 
     /** Number of elements: the product of all dimensions. */
-    val size: Int by lazy {
+    val size: Int = run {
         // <exercise ch01-s1> Return the product of all dimensions of the shape.
         shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
         // </exercise>
@@ -29,7 +29,12 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     val strides: IntArray
         get() {
             // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
-            TODO("ch01-s1: compute row-major strides")
+            return shape
+                .mapIndexed { index, _ ->
+                    shape.takeLast(shape.size - index - 1)
+                        .fold(1) { acc, i -> acc * i }
+                }
+                .toIntArray()
             // </exercise>
         }
 }
