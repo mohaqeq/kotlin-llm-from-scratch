@@ -58,7 +58,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
      */
     fun reshape(vararg newShape: Int): Tensor {
         // <exercise ch01-s1> Return a tensor with the new shape that shares this data.
-        TODO("ch01-s1: make a view with a new shape")
+        return Tensor(newShape, data)
         // </exercise>
     }
 
