@@ -34,4 +34,5 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     operator fun set(vararg index: Int, value: Double) {
         TODO("ch01-s1: Check the index as in get, then write the value at its position in data.")
     }
+
 }

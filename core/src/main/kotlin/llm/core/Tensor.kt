@@ -41,24 +41,20 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
     operator fun get(vararg index: Int): Double {
         // <exercise ch01-s1> Find the position of the index in data with the strides, and return that value.
-        require(index.size == shape.size) {
-            "Index ${index.contentToString()} has ${index.size} values, but shape ${shape.contentToString()} has ${shape.size} dimensions"
-        }
-        var position = 0
-        for (k in index.indices) {
-            val i = index[k]
-            if (i !in 0 until shape[k]) {
-                throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
-            }
-            position += i * strides[k]
-        }
-        return data[position]
+        return data[positionOf(index)]
         // </exercise>
     }
 
     /** Writes one element: `t[i, j] = v` changes the value at the position of [index] in [data]. */
     operator fun set(vararg index: Int, value: Double) {
         // <exercise ch01-s1> Check the index as in get, then write the value at its position in data.
+        data[positionOf(index)] = value
+        // </exercise>
+    }
+
+    // <solution-only ch01-s1>
+    /** Checks [index] against the shape and returns its position in [data]. */
+    private fun positionOf(index: IntArray): Int {
         require(index.size == shape.size) {
             "Index ${index.contentToString()} has ${index.size} values, but shape ${shape.contentToString()} has ${shape.size} dimensions"
         }
@@ -70,7 +66,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
             }
             position += i * strides[k]
         }
-        data[position] = value
-        // </exercise>
+        return position
     }
+    // </solution-only>
 }
