@@ -55,4 +55,11 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         return data[position]
         // </exercise>
     }
+
+    /** Writes one element: `t[i, j] = v` changes the value at the position of [index] in [data]. */
+    operator fun set(vararg index: Int, value: Double) {
+        // <exercise ch01-s1> Check the index as in get, then write the value at its position in data.
+        TODO("ch01-s1: write one element through the strides")
+        // </exercise>
+    }
 }

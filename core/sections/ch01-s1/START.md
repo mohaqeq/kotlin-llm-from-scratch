@@ -40,6 +40,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 6. `TensorBasicsTest > row-major strides: the last dimension moves fastest`
 7. `TensorBasicsTest > an element is read through the strides`
 8. `TensorBasicsTest > a wrong index is rejected, not read from another position`
+9. `TensorBasicsTest > an element is written through the strides`
 
 ## Done when
 

@@ -29,4 +29,9 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     operator fun get(vararg index: Int): Double {
         TODO("ch01-s1: Find the position of the index in data with the strides, and return that value.")
     }
+
+    /** Writes one element: `t[i, j] = v` changes the value at the position of [index] in [data]. */
+    operator fun set(vararg index: Int, value: Double) {
+        TODO("ch01-s1: Check the index as in get, then write the value at its position in data.")
+    }
 }

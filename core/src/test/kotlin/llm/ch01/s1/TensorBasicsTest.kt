@@ -88,4 +88,19 @@ class TensorBasicsTest : FunSpec({
         shouldThrow<IllegalArgumentException> { m[1] }
         shouldThrow<IllegalArgumentException> { m[0, 0, 0] }
     }
+
+    test("an element is written through the strides") {
+        val m = Tensor(shape = intArrayOf(2, 3), data = DoubleArray(6))
+
+        m[1, 2] = 9.0
+
+        m[1, 2] shouldBe 9.0
+        m.data[5] shouldBe 9.0 // position 1*3 + 2*1
+        m.data.count { it != 0.0 } shouldBe 1
+
+        // A wrong index must not write to another position.
+        shouldThrow<IndexOutOfBoundsException> { m[0, 3] = 1.0 }
+        shouldThrow<IllegalArgumentException> { m[1] = 1.0 }
+        m.data.count { it != 0.0 } shouldBe 1
+    }
 })
