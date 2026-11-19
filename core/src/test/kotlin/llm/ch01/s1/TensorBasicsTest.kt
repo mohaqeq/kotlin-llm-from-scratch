@@ -138,4 +138,30 @@ class TensorBasicsTest : FunSpec({
         // The number of elements must stay the same.
         shouldThrow<IllegalArgumentException> { t.reshape(4, 2) }
     }
+
+    test("transpose swaps two dimensions by swapping their strides, without a copy") {
+        // 1 2 3        1 4
+        // 4 5 6   ->   2 5
+        //              3 6
+        val t = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        val tt = t.transpose(0, 1)
+
+        tt.shape shouldBe intArrayOf(3, 2)
+        tt.strides shouldBe intArrayOf(1, 3)
+        tt.data shouldBeSameInstanceAs t.data
+        for (i in 0 until 2) {
+            for (j in 0 until 3) {
+                tt[j, i] shouldBe t[i, j]
+            }
+        }
+
+        // The original keeps its shape and strides.
+        t.shape shouldBe intArrayOf(2, 3)
+        t.strides shouldBe intArrayOf(3, 1)
+
+        // Any two dimensions: [2, 3, 4] with strides [12, 4, 1] -> swap 0 and 2.
+        val u = Tensor.zeros(2, 3, 4).transpose(0, 2)
+        u.shape shouldBe intArrayOf(4, 3, 2)
+        u.strides shouldBe intArrayOf(1, 4, 12)
+    }
 })

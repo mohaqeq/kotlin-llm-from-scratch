@@ -53,6 +53,16 @@ class Tensor(
         // </exercise>
     }
 
+    /**
+     * A view with dimensions [dim0] and [dim1] swapped. It swaps the two shape entries and the two
+     * strides; the data is not copied or moved. For a matrix, `transpose(0, 1)` is the transpose.
+     */
+    fun transpose(dim0: Int, dim1: Int): Tensor {
+        // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
+        TODO("ch01-s1: swap two dimensions through the strides")
+        // </exercise>
+    }
+
     // <solution-only ch01-s1>
     /** Checks [index] against the shape and returns its position in [data]. */
     private fun positionOf(index: IntArray): Int {

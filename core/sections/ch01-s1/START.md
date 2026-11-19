@@ -43,6 +43,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 9. `TensorBasicsTest > an element is written through the strides`
 10. `TensorBasicsTest > zeros and ones make a tensor of the shape, filled with 0.0 or 1.0`
 11. `TensorBasicsTest > reshape makes a view with a new shape that shares the data`
+12. `TensorBasicsTest > transpose swaps two dimensions by swapping their strides, without a copy`
 
 ## Done when
 
