@@ -1,5 +1,7 @@
 /*
- * Theme "Lab notebook": warm paper, deep-teal ink, serif headings, monospace code.
+ * Theme "Lab notebook": warm paper, deep-teal ink, serif body text, monospace headings and code.
+ * The headings use the same style as the author's blog (mohaqeq.github.io):
+ * JetBrains Mono, weight 700, letter-spacing -0.02em.
  * Starlight uses its default :root values for dark mode and
  * :root[data-theme='light'] for light mode.
  */
@@ -7,7 +9,7 @@
 :root {
   --sl-font: 'Source Serif 4 Variable', 'Iowan Old Style', Georgia, serif;
   --sl-font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', monospace;
-  --kl-font-display: 'Fraunces Variable', Georgia, serif;
+  --kl-font-display: var(--sl-font-mono);
   --sl-text-body: 1.0625rem;
   --sl-line-height: 1.7;
 
@@ -49,22 +51,17 @@
   --sl-color-black: #f8f3e7;
 }
 
-/* Serif display headings. */
+/* Monospace headings, as on the blog. */
 h1#_top,
 .hero h1,
 .sl-markdown-content :is(h1, h2, h3, h4),
 .site-title {
   font-family: var(--kl-font-display);
-  font-optical-sizing: auto;
-  letter-spacing: -0.01em;
-}
-
-.sl-markdown-content :is(h2, h3) {
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .site-title {
-  font-weight: 650;
   color: var(--sl-color-accent-high);
 }
 
@@ -87,8 +84,9 @@ h1#_top {
 }
 
 .hero h1 {
-  font-size: clamp(2.4rem, 6vw, 3.8rem);
-  line-height: 1.05;
+  /* Monospace letters are wide: a smaller size than a serif title needs. */
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.1;
   color: var(--sl-color-white);
 }
 

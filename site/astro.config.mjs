@@ -24,7 +24,6 @@ export default defineConfig({
       social: [{ icon: 'github', label: 'GitHub', href: repo }],
       editLink: { baseUrl: `${repo}/edit/main/site/` },
       customCss: [
-        '@fontsource-variable/fraunces',
         '@fontsource-variable/source-serif-4',
         '@fontsource-variable/jetbrains-mono',
         './src/styles/theme.css',
