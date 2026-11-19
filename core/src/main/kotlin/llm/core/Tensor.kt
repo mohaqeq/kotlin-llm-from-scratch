@@ -59,7 +59,9 @@ class Tensor(
      */
     fun transpose(dim0: Int, dim1: Int): Tensor {
         // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
-        TODO("ch01-s1: swap two dimensions through the strides")
+        val newShape = shape.clone().apply { this[dim0] = this[dim1].also { this[dim1] = this[dim0] } }
+        val newStrides = strides.clone().apply { this[dim0] = this[dim1].also { this[dim1] = this[dim0] } }
+        return Tensor(newShape, data, newStrides)
         // </exercise>
     }
 
