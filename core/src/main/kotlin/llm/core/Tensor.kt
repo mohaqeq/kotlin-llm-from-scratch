@@ -11,7 +11,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     /** Number of elements: the product of all dimensions. */
     val size: Int = run {
         // <exercise ch01-s1> Return the product of all dimensions of the shape.
-        shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
+        sizeOf(shape)
         // </exercise>
     }
 
@@ -74,15 +74,20 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */
         fun zeros(vararg shape: Int): Tensor {
             // <exercise ch01-s1> Make a tensor of this shape, filled with 0.0.
-            TODO("ch01-s1: make a tensor filled with 0.0")
+            return Tensor(shape, DoubleArray(sizeOf(shape)) { 0.0 })
             // </exercise>
         }
 
         /** A tensor of the given shape with all values 1.0. `ones()` is a scalar. */
         fun ones(vararg shape: Int): Tensor {
             // <exercise ch01-s1> Make a tensor of this shape, filled with 1.0.
-            TODO("ch01-s1: make a tensor filled with 1.0")
+            return Tensor(shape, DoubleArray(sizeOf(shape)) { 1.0 })
             // </exercise>
         }
+
+        // <solution-only ch01-s1>
+        /** Product of all dimensions; throws ArithmeticException on Int overflow. */
+        private fun sizeOf(shape: IntArray): Int = shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
+        // </solution-only>
     }
 }

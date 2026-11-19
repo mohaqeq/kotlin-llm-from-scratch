@@ -46,5 +46,6 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         fun ones(vararg shape: Int): Tensor {
             TODO("ch01-s1: Make a tensor of this shape, filled with 1.0.")
         }
+
     }
 }
