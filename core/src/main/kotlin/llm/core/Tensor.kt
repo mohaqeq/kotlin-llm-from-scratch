@@ -59,9 +59,9 @@ class Tensor(
      */
     fun transpose(dim0: Int, dim1: Int): Tensor {
         // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
-        require(dim0 in shape.indices && dim1 in shape.indices)
+        require(dim0 in shape.indices && dim1 in shape.indices) { "Dimensions are out of range" }
 
-        return Tensor(shape.clone().swapped(dim0, dim1), data,  strides.clone().swapped(dim0, dim1))
+        return Tensor(shape.swapped(dim0, dim1), data, strides.swapped(dim0, dim1))
         // </exercise>
     }
 
@@ -69,7 +69,8 @@ class Tensor(
     val isContiguous: Boolean
         get() {
             // <exercise ch01-s1> Compare the strides with the row-major strides of the shape.
-            TODO("ch01-s1: tell if the strides are row-major")
+            val contiguousStrides = contiguousStrides(shape)
+            return strides.contentEquals(contiguousStrides)
             // </exercise>
         }
 
@@ -79,7 +80,22 @@ class Tensor(
      */
     fun contiguous(): Tensor {
         // <exercise ch01-s1> Return this when contiguous; else copy the elements in row-major index order.
-        TODO("ch01-s1: copy a view into row-major order")
+        val contiguousStrides = contiguousStrides(shape)
+        return if (strides.contentEquals(contiguousStrides)) {
+            this
+        } else {
+            val contagious = DoubleArray(data.size)
+            for (i in data.indices) {
+                val cIndex = IntArray(strides.size)
+                var x = i
+                contiguousStrides.forEachIndexed { j, s ->
+                    cIndex[j] = x / s
+                    x %= s
+                }
+                contagious[i] = data[positionOf(cIndex)]
+            }
+            Tensor(shape, contagious, contiguousStrides)
+        }
         // </exercise>
     }
 
@@ -90,8 +106,7 @@ class Tensor(
             "Index ${index.contentToString()} has ${index.size} values, but shape ${shape.contentToString()} has ${shape.size} dimensions"
         }
         var position = 0
-        for (k in index.indices) {
-            val i = index[k]
+        index.forEachIndexed { k, i ->
             if (i !in 0 until shape[k]) {
                 throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
             }
@@ -136,10 +151,8 @@ class Tensor(
         /** Product of all dimensions; throws ArithmeticException on Int overflow. */
         private fun sizeOf(shape: IntArray): Int = shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
 
-        private fun IntArray.swapped(i: Int, j: Int): IntArray {
-            this[i] = this[j].also { this[j] = this[i] }
-            return this
-        }
+        private fun IntArray.swapped(i: Int, j: Int): IntArray =
+            this.clone().apply { this[i] = this[j].also { this[j] = this[i] } }
         // </solution-only>
     }
 }
