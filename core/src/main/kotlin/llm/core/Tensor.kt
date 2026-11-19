@@ -41,7 +41,15 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
     operator fun get(vararg index: Int): Double {
         // <exercise ch01-s1> Find the position of the index in data with the strides, and return that value.
-        return data[index.foldIndexed(0) { i, acc, v -> acc + strides[i] * v }]
+        require(index.size == shape.size) { "Index ${index.contentToString()} is out of range ${shape.contentToString()}" }
+        index.forEachIndexed { i, v ->
+            if (v !in 0 until shape[i]) {
+                throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
+            }
+        }
+        val dataIndex = index.foldIndexed(0) { i, acc, v -> acc + strides[i] * v }
+        require(dataIndex < data.size) { "Index is out of range" }
+        return data[dataIndex]
         // </exercise>
     }
 }
