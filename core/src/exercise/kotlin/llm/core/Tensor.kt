@@ -35,11 +35,12 @@ class Tensor(
     }
 
     /**
-     * A view with a new shape and the same [data]: no values are copied, so a write through
-     * the view changes this tensor too. The new shape must have the same size.
+     * The same elements, in row-major order, with a new shape of the same size.
+     * A contiguous tensor gives a view that shares [data] (a write through it changes this
+     * tensor too); any other tensor is first copied with [contiguous].
      */
     fun reshape(vararg newShape: Int): Tensor {
-        TODO("ch01-s1: Return a tensor with the new shape that shares this data.")
+        TODO("ch01-s1: Return a tensor with the new shape over the row-major data of this tensor.")
     }
 
     /**

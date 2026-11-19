@@ -44,12 +44,13 @@ class Tensor(
     }
 
     /**
-     * A view with a new shape and the same [data]: no values are copied, so a write through
-     * the view changes this tensor too. The new shape must have the same size.
+     * The same elements, in row-major order, with a new shape of the same size.
+     * A contiguous tensor gives a view that shares [data] (a write through it changes this
+     * tensor too); any other tensor is first copied with [contiguous].
      */
     fun reshape(vararg newShape: Int): Tensor {
-        // <exercise ch01-s1> Return a tensor with the new shape that shares this data.
-        return Tensor(newShape, data)
+        // <exercise ch01-s1> Return a tensor with the new shape over the row-major data of this tensor.
+        return Tensor(newShape, contiguous().data)
         // </exercise>
     }
 
@@ -59,7 +60,7 @@ class Tensor(
      */
     fun transpose(dim0: Int, dim1: Int): Tensor {
         // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
-        require(dim0 in shape.indices && dim1 in shape.indices) { "Dimensions are out of range" }
+        require(dim0 in shape.indices && dim1 in shape.indices) { "Dimension $dim0 or $dim1 is out of range ${shape.contentToString()}" }
 
         return Tensor(shape.swapped(dim0, dim1), data, strides.swapped(dim0, dim1))
         // </exercise>
@@ -80,19 +81,19 @@ class Tensor(
      */
     fun contiguous(): Tensor {
         // <exercise ch01-s1> Return this when contiguous; else copy the elements in row-major index order.
-        val contiguousStrides = contiguousStrides(shape)
-        return if (strides.contentEquals(contiguousStrides)) {
+        return if (isContiguous) {
             this
         } else {
+            val contiguousStrides = contiguousStrides(shape)
             val out = DoubleArray(size)
-            for (i in 0..<size) {
+            for (idx in 0..<size) {
                 val index = IntArray(shape.size)
-                var x = i
-                contiguousStrides.forEachIndexed { j, s ->
-                    index[j] = x / s
-                    x %= s
+                var reminder = idx
+                contiguousStrides.forEachIndexed { k, stride ->
+                    index[k] = reminder / stride
+                    reminder %= stride
                 }
-                out[i] = data[positionOf(index)]
+                out[idx] = data[offsetOf(index)]
             }
             Tensor(shape, out, contiguousStrides)
         }
@@ -100,19 +101,22 @@ class Tensor(
     }
 
     // <solution-only ch01-s1>
+    /** Position of [index] in data; no checks. */
+    private fun offsetOf(index: IntArray): Int =
+        index.foldIndexed(0) { idx, pos, element -> pos + element * strides[idx] }
+
+
     /** Checks [index] against the shape and returns its position in [data]. */
     private fun positionOf(index: IntArray): Int {
         require(index.size == shape.size) {
             "Index ${index.contentToString()} has ${index.size} values, but shape ${shape.contentToString()} has ${shape.size} dimensions"
         }
-        var position = 0
         index.forEachIndexed { k, i ->
             if (i !in 0 until shape[k]) {
                 throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
             }
-            position += i * strides[k]
         }
-        return position
+        return offsetOf(index)
     }
     // </solution-only>
 
