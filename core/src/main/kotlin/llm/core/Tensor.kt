@@ -74,7 +74,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */
         fun zeros(vararg shape: Int): Tensor {
             // <exercise ch01-s1> Make a tensor of this shape, filled with 0.0.
-            return Tensor(shape, DoubleArray(sizeOf(shape)) { 0.0 })
+            return Tensor(shape, DoubleArray(sizeOf(shape)))
             // </exercise>
         }
 
