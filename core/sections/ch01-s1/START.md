@@ -47,6 +47,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 13. `TensorBasicsTest > transpose rejects a dimension number that the tensor does not have`
 14. `TensorBasicsTest > contiguous copies a view into row-major order; a contiguous tensor returns itself`
 15. `TensorBasicsTest > reshape of a non-contiguous view keeps the row-major order of the view`
+16. `TensorBasicsTest > toString prints nested brackets in the order of the view`
 
 ## Done when
 

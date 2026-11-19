@@ -101,6 +101,16 @@ class Tensor(
         // </exercise>
     }
 
+    /**
+     * The values in nested brackets, one level per dimension, in the order of the view:
+     * a scalar prints as `7.0`, a 2x2 matrix as `[[1.0, 2.0], [3.0, 4.0]]`.
+     */
+    override fun toString(): String {
+        // <exercise ch01-s1> Print one pair of brackets per dimension; read the values through the strides.
+        TODO("ch01-s1: print the tensor in nested brackets")
+        // </exercise>
+    }
+
     // <solution-only ch01-s1>
 
     /** Position of [index] in data; no checks. */

@@ -200,4 +200,20 @@ class TensorBasicsTest : FunSpec({
         // A contiguous tensor still reshapes without a copy.
         t.reshape(3, 2).data shouldBeSameInstanceAs t.data
     }
+
+    test("toString prints nested brackets in the order of the view") {
+        Tensor(shape = intArrayOf(), data = doubleArrayOf(7.0)).toString() shouldBe "7.0"
+        Tensor(shape = intArrayOf(3), data = doubleArrayOf(1.0, 2.0, 3.0)).toString() shouldBe "[1.0, 2.0, 3.0]"
+
+        val m = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        m.toString() shouldBe "[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]"
+        // A view prints its own order, not the order of the data.
+        m.transpose(0, 1).toString() shouldBe "[[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]"
+
+        val cube = Tensor(shape = intArrayOf(2, 2, 2), data = DoubleArray(8) { it.toDouble() })
+        cube.toString() shouldBe "[[[0.0, 1.0], [2.0, 3.0]], [[4.0, 5.0], [6.0, 7.0]]]"
+
+        // A dimension of 0 gives empty brackets.
+        Tensor.zeros(2, 0).toString() shouldBe "[[], []]"
+    }
 })
