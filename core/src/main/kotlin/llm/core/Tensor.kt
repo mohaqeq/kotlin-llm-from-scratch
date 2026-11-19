@@ -84,17 +84,17 @@ class Tensor(
         return if (strides.contentEquals(contiguousStrides)) {
             this
         } else {
-            val contagious = DoubleArray(data.size)
-            for (i in data.indices) {
-                val cIndex = IntArray(strides.size)
+            val out = DoubleArray(size)
+            for (i in 0..<size) {
+                val index = IntArray(shape.size)
                 var x = i
                 contiguousStrides.forEachIndexed { j, s ->
-                    cIndex[j] = x / s
+                    index[j] = x / s
                     x %= s
                 }
-                contagious[i] = data[positionOf(cIndex)]
+                out[i] = data[positionOf(index)]
             }
-            Tensor(shape, contagious, contiguousStrides)
+            Tensor(shape, out, contiguousStrides)
         }
         // </exercise>
     }
