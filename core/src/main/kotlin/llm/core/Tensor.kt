@@ -88,10 +88,10 @@ class Tensor(
             val out = DoubleArray(size)
             for (idx in 0..<size) {
                 val index = IntArray(shape.size)
-                var reminder = idx
+                var remainder = idx
                 contiguousStrides.forEachIndexed { k, stride ->
-                    index[k] = reminder / stride
-                    reminder %= stride
+                    index[k] = remainder / stride
+                    remainder %= stride
                 }
                 out[idx] = data[offsetOf(index)]
             }
@@ -104,7 +104,6 @@ class Tensor(
     /** Position of [index] in data; no checks. */
     private fun offsetOf(index: IntArray): Int =
         index.foldIndexed(0) { idx, pos, element -> pos + element * strides[idx] }
-
 
     /** Checks [index] against the shape and returns its position in [data]. */
     private fun positionOf(index: IntArray): Int {
