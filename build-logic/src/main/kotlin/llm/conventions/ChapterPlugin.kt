@@ -48,7 +48,9 @@ class ChapterPlugin : Plugin<Project> {
         if (requested == null && taskNames.any { it == "startSection" || it == "verifyExercise" }) {
             throw GradleException("Give the section, for example: ./gradlew startSection -Psection=ch01-s1")
         }
-        if (requested != null && requested.chapter == chapter.number && requested.section !in 1..chapter.sections.size) {
+        if (requested != null && requested.chapter == chapter.number &&
+            requested.section !in 1..chapter.sections.size
+        ) {
             throw GradleException("Chapter ${chapter.number} has sections 1..${chapter.sections.size}, not $requested")
         }
         val isTarget = requested == null || requested.chapter == chapter.number
@@ -74,6 +76,7 @@ class ChapterPlugin : Plugin<Project> {
 
         // --- Dependencies: the solution (main) of every earlier chapter ------------
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
+        configureCodeQuality(libs)
         dependencies.apply {
             Curriculum.chapters.filter { it.number < chapter.number }.forEach { earlier ->
                 add("implementation", project(earlier.projectPath))
@@ -91,13 +94,16 @@ class ChapterPlugin : Plugin<Project> {
                 st.resources.setSrcDirs(listOf("src/test/resources"))
                 sourceSets.getByName("test").resources.setSrcDirs(emptyList<File>())
                 kotlin.sourceSets.getByName("exerciseTest").kotlin.setSrcDirs(listOf("src/test/kotlin"))
-                configurations.getByName("exerciseTestImplementation").extendsFrom(configurations.getByName("testImplementation"))
-                configurations.getByName("exerciseTestRuntimeOnly").extendsFrom(configurations.getByName("testRuntimeOnly"))
+                for (kind in listOf("Implementation", "RuntimeOnly")) {
+                    configurations.getByName("exerciseTest$kind").extendsFrom(configurations.getByName("test$kind"))
+                }
                 // Tests may use `internal` members, as with main.
                 kotlin.target.compilations.getByName("exerciseTest")
                     .associateWith(kotlin.target.compilations.getByName("exercise"))
             }
-        } else null
+        } else {
+            null
+        }
 
         // --- Tests --------------------------------------------------------------
         val verifying = "verifyExercise" in taskNames
@@ -134,13 +140,14 @@ class ChapterPlugin : Plugin<Project> {
         val target = requested?.takeIf { it.chapter == chapter.number } ?: chapter.section(1)
         val solutionFolder = file(solutionDir)
         val exerciseFolder = file(exerciseDir)
+        val exerciseFolderName = exerciseFolder.relativeTo(rootDir).invariantSeparatorsPath
         val reset = tasks.register("resetExercise") {
             group = "learning"
             description = "Resets src/exercise to the starter state of -Psection (default: the first section)."
             enabled = isTarget
             doLast {
                 StarterGenerator.generate(solutionFolder, exerciseFolder, target)
-                logger.lifecycle("Reset ${exerciseFolder.relativeTo(rootDir).invariantSeparatorsPath} to the starter state of $target.")
+                logger.lifecycle("Reset $exerciseFolderName to the starter state of $target.")
             }
         }
         tasks.matching { it.name.startsWith("compile") || it.name == "test" }.configureEach { mustRunAfter(reset) }

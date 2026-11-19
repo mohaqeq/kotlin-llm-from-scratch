@@ -23,7 +23,6 @@ class Tensor(
         TODO("ch01-s1: Reject a negative dimension, then data whose length is not the size of the shape.")
     }
 
-
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
     operator fun get(vararg index: Int): Double {
         TODO("ch01-s1: Find the position of the index in data with the strides, and return that value.")

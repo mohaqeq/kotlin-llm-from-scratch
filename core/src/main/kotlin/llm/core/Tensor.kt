@@ -28,7 +28,6 @@ class Tensor(
         // </exercise>
     }
 
-
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
     operator fun get(vararg index: Int): Double {
         // <exercise ch01-s1> Find the position of the index in data with the strides, and return that value.
@@ -60,7 +59,9 @@ class Tensor(
      */
     fun transpose(dim0: Int, dim1: Int): Tensor {
         // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
-        require(dim0 in shape.indices && dim1 in shape.indices) { "Dimension $dim0 or $dim1 is out of range ${shape.contentToString()}" }
+        require(dim0 in shape.indices && dim1 in shape.indices) {
+            "Dimension $dim0 or $dim1 is out of range ${shape.contentToString()}"
+        }
 
         return Tensor(shape.swapped(dim0, dim1), data, strides.swapped(dim0, dim1))
         // </exercise>
@@ -101,6 +102,7 @@ class Tensor(
     }
 
     // <solution-only ch01-s1>
+
     /** Position of [index] in data; no checks. */
     private fun offsetOf(index: IntArray): Int =
         index.foldIndexed(0) { idx, pos, element -> pos + element * strides[idx] }
@@ -112,7 +114,9 @@ class Tensor(
         }
         index.forEachIndexed { k, i ->
             if (i !in 0 until shape[k]) {
-                throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
+                throw IndexOutOfBoundsException(
+                    "Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}",
+                )
             }
         }
         return offsetOf(index)
@@ -151,6 +155,7 @@ class Tensor(
         }
 
         // <solution-only ch01-s1>
+
         /** Product of all dimensions; throws ArithmeticException on Int overflow. */
         private fun sizeOf(shape: IntArray): Int = shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
 

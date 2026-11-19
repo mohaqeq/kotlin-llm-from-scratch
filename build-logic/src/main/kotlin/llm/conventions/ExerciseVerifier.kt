@@ -42,8 +42,10 @@ object ExerciseVerifier {
             when {
                 section < target && c.failureType != null ->
                     problems += "$label: earlier section must pass in the starter, but failed with ${c.failureType}"
+
                 section == target && c.failureType != null && !c.isTodo ->
                     problems += "$label: must fail only with $TODO_ERROR, but failed with ${c.failureType}"
+
                 section > target && c.failureType != null && !c.isTodo ->
                     problems += "$label: later section failed with ${c.failureType}"
             }
@@ -53,7 +55,9 @@ object ExerciseVerifier {
         if (problems.isNotEmpty()) {
             throw GradleException("Starter state of $target is wrong:\n" + problems.joinToString("\n") { "  - $it" })
         }
-        println("OK: starter state of $target compiles, earlier sections pass, $targetFailures test(s) fail with TODO().")
+        println(
+            "OK: starter state of $target compiles, earlier sections pass, $targetFailures test(s) fail with TODO().",
+        )
     }
 
     private fun readCases(dir: File): List<Case> {
@@ -63,8 +67,10 @@ object ExerciseVerifier {
             val nodes = doc.getElementsByTagName("testcase")
             (0 until nodes.length).map { idx ->
                 val el = nodes.item(idx) as org.w3c.dom.Element
-                val failure = (el.getElementsByTagName("failure").item(0)
-                    ?: el.getElementsByTagName("error").item(0)) as org.w3c.dom.Element?
+                val failure = (
+                    el.getElementsByTagName("failure").item(0)
+                        ?: el.getElementsByTagName("error").item(0)
+                    ) as org.w3c.dom.Element?
                 Case(
                     className = el.getAttribute("classname"),
                     name = el.getAttribute("name"),

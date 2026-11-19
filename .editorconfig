@@ -1,0 +1,26 @@
+# Shared editor settings. ktlint (through Spotless) reads the Kotlin part, and IntelliJ uses it too.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+ktlint_code_style = intellij_idea
+max_line_length = 120
+# Keep class headers as written: kotest specs stay `class X : FunSpec({`.
+ktlint_standard_class-signature = disabled
+# Exercise marker comments sit directly above KDoc; no empty line between them.
+ktlint_standard_no-consecutive-comments = disabled
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+
+[*.{json,yml,yaml,toml,mjs,ts,astro,css}]
+indent_size = 2

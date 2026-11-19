@@ -9,7 +9,10 @@ Thank you for your interest. Read [HOW-TO-LEARN.md](HOW-TO-LEARN.md) first. It e
 3. After you change `src/main`, run `./gradlew resetExercise` and commit the changed `src/exercise` files.
    CI fails if `src/exercise` is not the generated starter state.
 4. Run `./gradlew build` and `./gradlew verifyExercise -Psection=<id>` for each section that you changed.
-5. Use conventional commit messages with the section as scope, for example `feat(ch03-s2): add causal mask`.
+5. Keep the code formatted. A local build formats `src/main` and `src/test` automatically (Spotless with ktlint,
+   rules in `.editorconfig`). You can also run `./gradlew spotlessApply`. CI fails on unformatted code.
+   Compiler warnings fail the build too.
+6. Use conventional commit messages with the section as scope, for example `feat(ch03-s2): add causal mask`.
 
 ## Exercise markers
 

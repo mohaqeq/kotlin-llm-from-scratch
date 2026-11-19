@@ -4,8 +4,7 @@ import java.io.File
 
 /** One section id, for example `ch03-s2` = chapter 3, section 2. */
 data class SectionId(val chapter: Int, val section: Int) : Comparable<SectionId> {
-    override fun compareTo(other: SectionId): Int =
-        compareValuesBy(this, other, SectionId::chapter, SectionId::section)
+    override fun compareTo(other: SectionId): Int = compareValuesBy(this, other, SectionId::chapter, SectionId::section)
 
     override fun toString(): String = "ch%02d-s%d".format(chapter, section)
 
@@ -57,7 +56,9 @@ data class Chapter(
 object Curriculum {
     val chapters: List<Chapter> = listOf(
         Chapter(
-            1, ":core", "Foundations",
+            1,
+            ":core",
+            "Foundations",
             listOf(
                 "Tensor basics",
                 "Element-wise operations and broadcasting",
@@ -67,7 +68,9 @@ object Curriculum {
             ),
         ),
         Chapter(
-            2, ":chapters:ch02-tokenizer", "Tokenizer and data",
+            2,
+            ":chapters:ch02-tokenizer",
+            "Tokenizer and data",
             listOf(
                 "Word-level tokenizer",
                 "Byte-pair encoding",
@@ -77,7 +80,9 @@ object Curriculum {
             ),
         ),
         Chapter(
-            3, ":chapters:ch03-attention", "Attention",
+            3,
+            ":chapters:ch03-attention",
+            "Attention",
             listOf(
                 "Simplified self-attention",
                 "Trainable self-attention",
@@ -86,7 +91,9 @@ object Curriculum {
             ),
         ),
         Chapter(
-            4, ":chapters:ch04-gpt", "GPT model",
+            4,
+            ":chapters:ch04-gpt",
+            "GPT model",
             listOf(
                 "Layer normalization",
                 "GELU feed-forward network",
@@ -96,7 +103,9 @@ object Curriculum {
             ),
         ),
         Chapter(
-            5, ":chapters:ch05-training", "Training",
+            5,
+            ":chapters:ch05-training",
+            "Training",
             listOf(
                 "Cross-entropy loss",
                 "AdamW",
@@ -106,7 +115,9 @@ object Curriculum {
             ),
         ),
         Chapter(
-            6, ":chapters:ch06-bonus", "Bonus",
+            6,
+            ":chapters:ch06-bonus",
+            "Bonus",
             listOf(
                 "Loading GPT-2 weights",
                 "Performance: parallel matmul and the Vector API",
@@ -120,10 +131,9 @@ object Curriculum {
     fun byNumber(n: Int): Chapter? = chapters.firstOrNull { it.number == n }
 
     /** Sections that have a test package. Only these sections have a starter state to verify. */
-    fun sectionsWithTests(rootDir: File): List<SectionId> =
-        chapters.flatMap { ch ->
-            ch.sections.indices.map { it + 1 }
-                .filter { ch.testDir(rootDir, it).isDirectory }
-                .map { ch.section(it) }
-        }
+    fun sectionsWithTests(rootDir: File): List<SectionId> = chapters.flatMap { ch ->
+        ch.sections.indices.map { it + 1 }
+            .filter { ch.testDir(rootDir, it).isDirectory }
+            .map { ch.section(it) }
+    }
 }

@@ -86,6 +86,13 @@ site/                  Astro + Starlight site (theme in site/src/styles/theme.cs
 - Versions: JDK 25 toolchain, Kotlin 2.4.21, Gradle 9.8.2, Kotest 6.2.4, Astro 7.4.4, Starlight 0.42.8.
   Starlight ≥ 0.39: a sidebar group with autogenerate is `{ label, items: [{ autogenerate: { directory } }] }`.
 - Site pages have front matter `status: planned | in-progress | done`; `src/routeData.ts` turns it into sidebar badges.
+- Code quality (`build-logic/.../CodeQuality.kt`): Spotless 8.9.0 runs ktlint 1.8.0 with rules from `.editorconfig`
+  (`intellij_idea` style, 120 columns, `class-signature` and `no-consecutive-comments` off). Outside CI, compile tasks
+  run `spotlessApply` first; CI runs `spotlessCheck` in `check`. Kotlin warnings are errors in `src/main` and
+  `src/test` (not in generated `src/exercise`). The user asked for released tools only: detekt is not used, because
+  its only release (1.23.8) does not support Kotlin 2.4 and 2.x is alpha.
+- ktlint only breaks long lines; it cannot restructure them. After `spotlessApply`, read the diff and rewrite awkward
+  wraps by hand (for example with a local variable).
 
 ## Local environment (Windows)
 
