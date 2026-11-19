@@ -59,7 +59,18 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     /** Writes one element: `t[i, j] = v` changes the value at the position of [index] in [data]. */
     operator fun set(vararg index: Int, value: Double) {
         // <exercise ch01-s1> Check the index as in get, then write the value at its position in data.
-        TODO("ch01-s1: write one element through the strides")
+        require(index.size == shape.size) {
+            "Index ${index.contentToString()} has ${index.size} values, but shape ${shape.contentToString()} has ${shape.size} dimensions"
+        }
+        var position = 0
+        for (k in index.indices) {
+            val i = index[k]
+            if (i !in 0 until shape[k]) {
+                throw IndexOutOfBoundsException("Index ${index.contentToString()} is out of bounds for shape ${shape.contentToString()}")
+            }
+            position += i * strides[k]
+        }
+        data[position] = value
         // </exercise>
     }
 }
