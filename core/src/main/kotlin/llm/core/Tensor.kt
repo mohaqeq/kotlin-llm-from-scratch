@@ -5,8 +5,14 @@ package llm.core
  *
  * - [shape] gives the length of each dimension, for example [2, 3] for a 2x3 matrix.
  * - [data] holds the values in one flat array.
+ * - [strides] gives, for each dimension, how many positions in [data] one step moves.
+ *   The default is row-major ([contiguousStrides]); views such as transpose use other strides.
  */
-class Tensor(val shape: IntArray, val data: DoubleArray) {
+class Tensor(
+    val shape: IntArray,
+    val data: DoubleArray,
+    val strides: IntArray = contiguousStrides(shape),
+) {
 
     /** Number of elements: the product of all dimensions. */
     val size: Int = run {
@@ -22,21 +28,6 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         // </exercise>
     }
 
-    /**
-     * Row-major strides: `strides[k]` is how many positions in [data] one step in dimension k moves.
-     * For shape [2, 3, 4] the strides are [12, 4, 1].
-     */
-    val strides: IntArray = run {
-        // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
-        val result = IntArray(shape.size)
-        var step = 1
-        for (k in shape.indices.reversed()) {
-            result[k] = step
-            step *= shape[k]
-        }
-        result
-        // </exercise>
-    }
 
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */
     operator fun get(vararg index: Int): Double {
@@ -81,6 +72,22 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
     // </solution-only>
 
     companion object {
+        /**
+         * Row-major strides for [shape]: `strides[k]` is how many positions in data one step in
+         * dimension k moves. The last dimension has stride 1. For shape [2, 3, 4]: [12, 4, 1].
+         */
+        fun contiguousStrides(shape: IntArray): IntArray {
+            // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
+            val result = IntArray(shape.size)
+            var step = 1
+            for (k in shape.indices.reversed()) {
+                result[k] = step
+                step *= shape[k]
+            }
+            return result
+            // </exercise>
+        }
+
         /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */
         fun zeros(vararg shape: Int): Tensor {
             // <exercise ch01-s1> Make a tensor of this shape, filled with 0.0.
