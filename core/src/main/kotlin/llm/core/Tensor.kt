@@ -65,6 +65,24 @@ class Tensor(
         // </exercise>
     }
 
+    /** True when the strides are row-major for the shape, so [data] holds the elements in row-major order. */
+    val isContiguous: Boolean
+        get() {
+            // <exercise ch01-s1> Compare the strides with the row-major strides of the shape.
+            TODO("ch01-s1: tell if the strides are row-major")
+            // </exercise>
+        }
+
+    /**
+     * A tensor with the same shape and values whose data is in row-major order. A contiguous
+     * tensor returns itself (no copy); any other view copies its elements into a new array.
+     */
+    fun contiguous(): Tensor {
+        // <exercise ch01-s1> Return this when contiguous; else copy the elements in row-major index order.
+        TODO("ch01-s1: copy a view into row-major order")
+        // </exercise>
+    }
+
     // <solution-only ch01-s1>
     /** Checks [index] against the shape and returns its position in [data]. */
     private fun positionOf(index: IntArray): Int {

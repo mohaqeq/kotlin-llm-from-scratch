@@ -50,6 +50,20 @@ class Tensor(
         TODO("ch01-s1: Swap the two dimensions in a copy of the shape and of the strides; share the data.")
     }
 
+    /** True when the strides are row-major for the shape, so [data] holds the elements in row-major order. */
+    val isContiguous: Boolean
+        get() {
+            TODO("ch01-s1: Compare the strides with the row-major strides of the shape.")
+        }
+
+    /**
+     * A tensor with the same shape and values whose data is in row-major order. A contiguous
+     * tensor returns itself (no copy); any other view copies its elements into a new array.
+     */
+    fun contiguous(): Tensor {
+        TODO("ch01-s1: Return this when contiguous; else copy the elements in row-major index order.")
+    }
+
 
     companion object {
         /**

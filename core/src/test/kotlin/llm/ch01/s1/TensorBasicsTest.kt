@@ -5,6 +5,7 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeSameInstanceAs
+import io.kotest.matchers.types.shouldNotBeSameInstanceAs
 import io.kotest.matchers.string.shouldContain
 import llm.core.Tensor
 
@@ -169,5 +170,22 @@ class TensorBasicsTest : FunSpec({
         val m = Tensor.zeros(2, 3)
         shouldThrow<IllegalArgumentException> { m.transpose(0, 2) }
         shouldThrow<IllegalArgumentException> { m.transpose(-1, 0) }
+    }
+
+    test("contiguous copies a view into row-major order; a contiguous tensor returns itself") {
+        val t = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0, 6.0))
+        t.isContiguous shouldBe true
+        t.contiguous() shouldBeSameInstanceAs t
+
+        // The transpose reads row by row as 1 4 / 2 5 / 3 6, but its data is still 1 2 3 4 5 6.
+        val tt = t.transpose(0, 1)
+        tt.isContiguous shouldBe false
+
+        val c = tt.contiguous()
+        c.isContiguous shouldBe true
+        c.shape shouldBe intArrayOf(3, 2)
+        c.strides shouldBe intArrayOf(2, 1)
+        c.data.toList() shouldBe listOf(1.0, 4.0, 2.0, 5.0, 3.0, 6.0)
+        c.data shouldNotBeSameInstanceAs t.data
     }
 })
