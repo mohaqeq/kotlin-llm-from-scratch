@@ -26,15 +26,15 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
      * Row-major strides: `strides[k]` is how many positions in [data] one step in dimension k moves.
      * For shape [2, 3, 4] the strides are [12, 4, 1].
      */
-    val strides: IntArray
-        get() {
-            // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
-            return shape
-                .mapIndexed { index, _ ->
-                    shape.takeLast(shape.size - index - 1)
-                        .fold(1) { acc, i -> acc * i }
-                }
-                .toIntArray()
-            // </exercise>
+    val strides: IntArray = run {
+        // <exercise ch01-s1> Compute row-major strides: the last dimension has stride 1.
+        val result = IntArray(shape.size)
+        var step = 1
+        for (k in shape.indices.reversed()) {
+            result[k] = step
+            step *= shape[k]
         }
+        result
+        // </exercise>
+    }
 }

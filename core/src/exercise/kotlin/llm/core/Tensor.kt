@@ -21,8 +21,7 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
      * Row-major strides: `strides[k]` is how many positions in [data] one step in dimension k moves.
      * For shape [2, 3, 4] the strides are [12, 4, 1].
      */
-    val strides: IntArray
-        get() {
-            TODO("ch01-s1: Compute row-major strides: the last dimension has stride 1.")
-        }
+    val strides: IntArray = run {
+        TODO("ch01-s1: Compute row-major strides: the last dimension has stride 1.")
+    }
 }
