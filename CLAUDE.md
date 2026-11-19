@@ -70,7 +70,10 @@ site/                  Astro + Starlight site (theme in site/src/styles/theme.cs
 - Exercise markers in `src/main`:
   - `// <exercise chNN-sM> hint` … `// </exercise>` becomes `TODO("chNN-sM: hint")` for section M and later.
   - `// <solution-only chNN-sM>` … `// </solution-only>` is removed for section M and later.
-  - Put markers inside function bodies (complete statements). No nesting.
+  - Put `exercise` markers inside function bodies (complete statements), never around a declaration: for a stored
+    property use `val x = run { // <exercise ...> ... // </exercise> }`. No nesting.
+  - Every private helper that the solution adds needs `solution-only` markers. `verifyExercise` does not detect such a
+    leak (the tests still fail with TODO), so read the generated starter after each green step.
 - After every change in `src/main`: `./gradlew resetExercise` and commit `src/exercise`.
 - `./gradlew verifyExercise -Psection=<id>`: the starter compiles, earlier sections pass, the section fails only with
   `NotImplementedError` (directly, or as `Caused by:` of an assertion error, for example in `shouldThrow`). CI runs it for every id from `./gradlew -q listSections`.

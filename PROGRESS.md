@@ -67,3 +67,9 @@ Legend: `[x]` done (tests green, guide written, starter branch made), `[~]` in p
 - Set up the repository, the build, CI and the site.
 - Started ch01-s1. Step 1 is RED: `TensorBasicsTest > size is the product of all dimensions`.
 - Next: I implement `Tensor.size` in `core/src/main/kotlin/llm/core/Tensor.kt`.
+
+### 2026-11-18 to 2026-11-19
+
+- ch01-s1 steps 1-9 green: size, scalar, length check, negative dimensions, overflow, strides, get, index checks, set, zeros/ones.
+- Build fix: `main` is always the solution; exercise mode adds an `exerciseTest` source set (no task changes sources with the mode).
+- Next: ch01-s1 views: reshape (shares data), transpose (swaps strides), contiguous, toString, property tests.
