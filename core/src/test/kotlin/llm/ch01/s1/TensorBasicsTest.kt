@@ -103,4 +103,17 @@ class TensorBasicsTest : FunSpec({
         shouldThrow<IllegalArgumentException> { m[1] = 1.0 }
         m.data.count { it != 0.0 } shouldBe 1
     }
+
+    test("zeros and ones make a tensor of the shape, filled with 0.0 or 1.0") {
+        val z = Tensor.zeros(2, 3)
+        z.shape shouldBe intArrayOf(2, 3)
+        z.data.toList() shouldBe List(6) { 0.0 }
+
+        val o = Tensor.ones(4)
+        o.shape shouldBe intArrayOf(4)
+        o.data.toList() shouldBe List(4) { 1.0 }
+
+        // No dimensions: a scalar with one value.
+        Tensor.ones().data.toList() shouldBe listOf(1.0)
+    }
 })

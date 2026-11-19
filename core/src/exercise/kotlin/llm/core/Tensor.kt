@@ -35,4 +35,16 @@ class Tensor(val shape: IntArray, val data: DoubleArray) {
         TODO("ch01-s1: Check the index as in get, then write the value at its position in data.")
     }
 
+
+    companion object {
+        /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */
+        fun zeros(vararg shape: Int): Tensor {
+            TODO("ch01-s1: Make a tensor of this shape, filled with 0.0.")
+        }
+
+        /** A tensor of the given shape with all values 1.0. `ones()` is a scalar. */
+        fun ones(vararg shape: Int): Tensor {
+            TODO("ch01-s1: Make a tensor of this shape, filled with 1.0.")
+        }
+    }
 }

@@ -41,6 +41,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 7. `TensorBasicsTest > an element is read through the strides`
 8. `TensorBasicsTest > a wrong index is rejected, not read from another position`
 9. `TensorBasicsTest > an element is written through the strides`
+10. `TensorBasicsTest > zeros and ones make a tensor of the shape, filled with 0.0 or 1.0`
 
 ## Done when
 
