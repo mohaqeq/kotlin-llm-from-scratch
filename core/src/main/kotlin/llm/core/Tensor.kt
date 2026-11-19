@@ -59,9 +59,9 @@ class Tensor(
      */
     fun transpose(dim0: Int, dim1: Int): Tensor {
         // <exercise ch01-s1> Swap the two dimensions in a copy of the shape and of the strides; share the data.
-        val newShape = shape.clone().apply { this[dim0] = this[dim1].also { this[dim1] = this[dim0] } }
-        val newStrides = strides.clone().apply { this[dim0] = this[dim1].also { this[dim1] = this[dim0] } }
-        return Tensor(newShape, data, newStrides)
+        require(dim0 in shape.indices && dim1 in shape.indices)
+
+        return Tensor(shape.clone().swapped(dim0, dim1), data,  strides.clone().swapped(dim0, dim1))
         // </exercise>
     }
 
@@ -117,6 +117,11 @@ class Tensor(
         // <solution-only ch01-s1>
         /** Product of all dimensions; throws ArithmeticException on Int overflow. */
         private fun sizeOf(shape: IntArray): Int = shape.fold(1) { acc, d -> Math.multiplyExact(acc, d) }
+
+        private fun IntArray.swapped(i: Int, j: Int): IntArray {
+            this[i] = this[j].also { this[j] = this[i] }
+            return this
+        }
         // </solution-only>
     }
 }

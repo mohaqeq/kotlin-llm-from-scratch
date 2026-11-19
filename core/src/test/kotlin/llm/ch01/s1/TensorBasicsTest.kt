@@ -164,4 +164,10 @@ class TensorBasicsTest : FunSpec({
         u.shape shouldBe intArrayOf(4, 3, 2)
         u.strides shouldBe intArrayOf(1, 4, 12)
     }
+
+    test("transpose rejects a dimension number that the tensor does not have") {
+        val m = Tensor.zeros(2, 3)
+        shouldThrow<IllegalArgumentException> { m.transpose(0, 2) }
+        shouldThrow<IllegalArgumentException> { m.transpose(-1, 0) }
+    }
 })
