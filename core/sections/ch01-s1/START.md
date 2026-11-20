@@ -49,6 +49,13 @@ Tests are in `core/src/test/kotlin/llm/ch01/s1/`.
 15. `TensorBasicsTest > reshape of a non-contiguous view keeps the row-major order of the view`
 16. `TensorBasicsTest > toString prints nested brackets in the order of the view`
 
+Property tests (`TensorPropertiesTest`, random shapes) check the same code on many cases:
+
+17. `TensorPropertiesTest > transposing twice with the same dimensions gives back the original view`
+18. `TensorPropertiesTest > a transposed view reads each element with the two indices swapped`
+19. `TensorPropertiesTest > reshape to one dimension and back keeps every element in row-major order`
+20. `TensorPropertiesTest > contiguous keeps every value and gives row-major strides`
+
 ## Done when
 
 - All tests of `llm.ch01.s1` pass in exercise mode.
