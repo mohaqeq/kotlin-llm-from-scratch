@@ -73,6 +73,7 @@ class Tensor(
     }
 
 
+
     companion object {
         /**
          * Row-major strides for [shape]: `strides[k]` is how many positions in data one step in

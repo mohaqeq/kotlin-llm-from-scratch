@@ -107,9 +107,23 @@ class Tensor(
      */
     override fun toString(): String {
         // <exercise ch01-s1> Print one pair of brackets per dimension; read the values through the strides.
-        TODO("ch01-s1: print the tensor in nested brackets")
+        return render(dim = 0, position = 0)
         // </exercise>
     }
+
+    // <solution-only ch01-s1>
+
+    /**
+     * Text of the part of the tensor that starts at [position] in [data], from dimension [dim] inward.
+     * After the last dimension, the part is one value.
+     */
+    private fun render(dim: Int, position: Int): String {
+        if (dim == shape.size) return data[position].toString()
+        return (0 until shape[dim]).joinToString(prefix = "[", separator = ", ", postfix = "]") { i ->
+            render(dim + 1, position + i * strides[dim])
+        }
+    }
+    // </solution-only>
 
     // <solution-only ch01-s1>
 
