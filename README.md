@@ -34,6 +34,14 @@ Then read [HOW-TO-LEARN.md](HOW-TO-LEARN.md).
 
 Progress: see [PROGRESS.md](PROGRESS.md).
 
+## Contributors and coding agents
+
+- [AGENTS.md](AGENTS.md): the rules for any coding agent (Claude Code, Codex, Cursor, Copilot, Gemini) and for people.
+- [PROGRESS.md](PROGRESS.md): the current state and the next action.
+- [docs/](docs/): the [project brief](docs/PROJECT-BRIEF.md), the [workflow](docs/WORKFLOW.md), and the
+  [decisions](docs/DECISIONS.md).
+- [CONTRIBUTING.md](CONTRIBUTING.md): exercise markers and formatting.
+
 ## Requirements
 
 - JDK 25 (Gradle downloads it if it is not installed).
