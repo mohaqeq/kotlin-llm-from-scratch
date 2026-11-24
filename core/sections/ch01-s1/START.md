@@ -1,17 +1,22 @@
 # ch01-s1 · Tensor basics
 
-> Status: in progress. The list of tests grows with each TDD step.
-
 Guide: <https://mohaqeq.github.io/kotlin-llm-from-scratch/ch01/s1-tensor-basics/>
 
 ## What you build
 
-The class `llm.core.Tensor`: an n-dimensional array of `Double` values with a shape, a size,
-row-major strides, element access, and views (reshape, transpose) that share the data.
+The class `llm.core.Tensor`: an n-dimensional array of `Double` values with
+
+- a shape and a size (with checks for wrong data, negative dimensions and `Int` overflow),
+- row-major strides, and element access through them (`t[i, j]`, `t[i, j] = v`) with index checks,
+- the factories `Tensor.zeros(...)` and `Tensor.ones(...)`,
+- views that share the data: `reshape` and `transpose`,
+- `isContiguous` and `contiguous()`, which copies a view into row-major order,
+- `toString()` in nested brackets.
 
 ## Prerequisites
 
-- Concepts: Kotlin classes, arrays, and `vararg`. No math beyond multiplication.
+- Concepts: Kotlin classes, `IntArray`/`DoubleArray`, `vararg`, `require`, and recursion (for `toString`).
+  No math beyond multiplication and division with remainder.
 - Earlier classes that you use: none. This is the first section.
 
 ## Begin
@@ -58,5 +63,6 @@ Property tests (`TensorPropertiesTest`, random shapes) check the same code on ma
 
 ## Done when
 
-- All tests of `llm.ch01.s1` pass in exercise mode.
-- `./gradlew :core:run -Psection=1 -Pmode=exercise` prints the shape and the size, not a TODO.
+- All 20 tests of `llm.ch01.s1` pass in exercise mode.
+- `./gradlew :core:run -Psection=1 -Pmode=exercise` prints the tensor, its transpose and its reshapes, not a TODO.
+  The last line shows that a write to `t` is visible in the transposed view.
