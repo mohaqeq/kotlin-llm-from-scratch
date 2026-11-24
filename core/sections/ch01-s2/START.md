@@ -34,6 +34,7 @@ Write your code in `core/src/exercise/kotlin/llm/core/Tensor.kt`. Then run:
 Tests are in `core/src/test/kotlin/llm/ch01/s2/`.
 
 1. `ElementwiseTest > plus adds two tensors of the same shape element by element`
+2. `ElementwiseTest > plus adds by index, also when an input is a view`
 
 ## Done when
 
