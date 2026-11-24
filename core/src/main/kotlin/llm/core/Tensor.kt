@@ -176,6 +176,17 @@ class Tensor(
             // </exercise>
         }
 
+        /**
+         * The shape that [a] and [b] broadcast to. The shapes are aligned from the right. Two dimensions fit when they
+         * are equal or one of them is 1; the result has the larger one. A missing dimension counts as 1.
+         * Example: [3, 1] and [1, 4] give [3, 4]. Throws IllegalArgumentException when the shapes do not fit.
+         */
+        fun broadcastShapes(a: IntArray, b: IntArray): IntArray {
+            // <exercise ch01-s2> Align the shapes from the right; equal dimensions or a 1 fit, else throw.
+            TODO("ch01-s2: compute the broadcast shape of two shapes")
+            // </exercise>
+        }
+
         /** A tensor of the given shape with all values 0.0. `zeros()` is a scalar. */
         fun zeros(vararg shape: Int): Tensor {
             // <exercise ch01-s1> Make a tensor of this shape, filled with 0.0.
