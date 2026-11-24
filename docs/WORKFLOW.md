@@ -115,10 +115,25 @@ Each section page has, in this order:
 5. Exercises for the reader, and a link to the source on GitHub.
 
 Code on the page must come from the repository files, not from copies, so the site never drifts from the code.
-**Not built yet:** a `Snippet` component (`site/src/components/Snippet.astro`) that reads a repository file at build
-time (with `node:fs` from the repository root, or `import.meta.glob` with `?raw`) and shows a marked region. Plan:
-region markers such as `// region snippet-name` … `// endregion` in the Kotlin sources, which the starter generator
-must ignore. Build it with the first guide page (ch01-s1).
+Use `site/src/components/Snippet.astro` in an `.mdx` page (example: `site/src/content/docs/ch01/s1-tensor-basics.mdx`):
+
+```mdx
+import Snippet from '../../../components/Snippet.astro';
+export const T = 'core/src/main/kotlin/llm/core/Tensor.kt';
+
+<Snippet file={T} symbol="fun transpose(" doc />                       {/* one block, with its KDoc */}
+<Snippet file={T} symbol={['fun zeros(', 'fun ones(']} />              {/* several blocks */}
+<Snippet file="core/src/test/kotlin/llm/ch01/s1/TensorBasicsTest.kt" symbol='test("a scalar has an empty shape and size 1")' />
+```
+
+- `symbol` is text in the first line of the block. A line that ends with `{` starts a block that ends at the `}` with
+  the same indentation; any other line continues while the next lines are indented more.
+- Exercise markers are hidden. Each snippet links to its lines on GitHub.
+- A symbol that is not found stops the build. Use a symbol that is unique in the file (`fun contiguous()`, not
+  `fun contiguous`, which also matches `contiguousStrides`).
+- In MDX text, `{` and `<` start JSX. Put them in backticks.
+- Collapsible solution: `<details><summary>Solution</summary>`, an empty line, the `<Snippet>`, an empty line,
+  `</details>`.
 
 ### Starter branch procedure
 

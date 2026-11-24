@@ -23,11 +23,11 @@ Status marks: ✅ done, 🟡 in progress, ⬜ not started. The detailed checklis
 - ✅ Two states per section on `main`: the starter (`src/exercise`, tests fail with `TODO()`) and the solution
   (`src/main`). `-Pmode=exercise` switches the tests to the learner's code.
 - ✅ Every section is a self-contained starting point: a section uses the solution of all earlier sections.
-- 🟡 Each section has `sections/chNN-sM/START.md`: what you build, prerequisites, the begin command, the tests in
+- ✅ Each section has `sections/chNN-sM/START.md`: what you build, prerequisites, the begin command, the tests in
   order, "done when". (ch01-s1 exists.)
 - ✅ `./gradlew startSection -Psection=<id>` resets the starter and shows RED. `resetExercise` resets.
 - 🟡 Starter files include everything except the part being learned, and a runnable `main()` that prints a clear TODO.
-- ⬜ A branch `start/chNN-sM` per section with the starter state.
+- ✅ A branch `start/chNN-sM` per section with the starter state (made when a section closes).
 - ✅ CI checks every section starter from a fresh clone: it compiles, it fails only with `NotImplementedError`, and the
   solution passes.
 - ✅ Git tags for every TDD step (`chNN-sM-stepK-red`, `chNN-sM-stepK-green`).
@@ -55,7 +55,7 @@ Cover all of it, also the parts that the Node.js book marks "Coming Soon". Secti
 
 | Chapter | Sections | Status |
 |---|---|---|
-| 1 Foundations (`core`) | s1 Tensor basics (shape, strides, views); s2 element-wise ops and broadcasting; s3 matmul and reductions; s4 reverse-mode autograd; s5 Linear layer and SGD, with gradient checks | 🟡 s1 nearly closed |
+| 1 Foundations (`core`) | s1 Tensor basics (shape, strides, views); s2 element-wise ops and broadcasting; s3 matmul and reductions; s4 reverse-mode autograd; s5 Linear layer and SGD, with gradient checks | 🟡 s1 done |
 | 2 Tokenizer and data | s1 word-level tokenizer; s2 byte-pair encoding (checked against JTokkit); s3 sliding-window sampling; s4 Dataset and DataLoader; s5 token and positional embeddings | ⬜ |
 | 3 Attention | s1 simplified self-attention; s2 trainable self-attention (Q, K, V); s3 causal mask and dropout; s4 multi-head attention | ⬜ |
 | 4 GPT model | s1 LayerNorm; s2 GELU feed-forward; s3 transformer block (pre-LN, residuals); s4 full GPT (GPT-2 small config and a tiny laptop config); s5 parameter counting | ⬜ |
@@ -71,9 +71,9 @@ Cover all of it, also the parts that the Node.js book marks "Coming Soon". Secti
   map). Headings use JetBrains Mono like the owner's blog (owner's request).
   The owner has not formally chosen between the three proposed themes; "Lab notebook" is active.
 - ✅ One overview page per chapter. 🟡 One page per section, written as a TDD walkthrough (template in
-  [WORKFLOW.md](WORKFLOW.md)).
+  [WORKFLOW.md](WORKFLOW.md)); ch01-s1 is done.
 - Each section page: "Start here" box, concept, diagrams, tensor-shape tables, key code taken directly from the
-  repository files (⬜ `Snippet` component not built yet), "Run it", exercises, link to the source.
+  repository files (✅ `Snippet` component), "Run it", exercises, link to the source.
 - ✅ "In progress" / "Planned" sidebar badges, automatic from front matter.
 - ✅ Original prose in the owner's voice. ✅ An About page credits the Node.js book and Raschka's book.
 

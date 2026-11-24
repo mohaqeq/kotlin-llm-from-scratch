@@ -5,17 +5,19 @@ Agents: read [AGENTS.md](AGENTS.md) for the rules and [docs/WORKFLOW.md](docs/WO
 
 ## Current state and next action
 
-- **Section:** ch01-s1 Tensor basics. All 14 TDD steps are green and pushed (tags `ch01-s1-step1-red` …
-  `ch01-s1-step14-green`). Property tests (`TensorPropertiesTest`) are pushed. 20 tests pass.
+- **Section:** ch01-s1 Tensor basics is **done**: 14 TDD steps (tags `ch01-s1-step1-red` … `ch01-s1-step14-green`),
+  property tests, `START.md`, demo, guide page (`site/src/content/docs/ch01/s1-tensor-basics.mdx`), branch
+  `start/ch01-s1`.
 - **Local, not pushed:** nothing.
-- **Next action:** close ch01-s1 (docs/WORKFLOW.md, section 3):
-  1. Finish `core/sections/ch01-s1/START.md` (remove the "in progress" line; check "Done when").
-  2. Make `Section1.kt` show the views (reshape, transpose, contiguous, toString).
-  3. Build the `Snippet` site component, then write `site/src/content/docs/ch01/s1-tensor-basics.mdx` as a TDD
-     walkthrough of the 14 steps; set `status: done`.
-  4. Create the branch `start/ch01-s1`.
-  5. Mark ch01-s1 `[x]` below, then start ch01-s2 (element-wise operations and broadcasting).
+- **Next action:** start ch01-s2 "Element-wise operations and broadcasting" (docs/WORKFLOW.md, section 2):
+  1. Explain element-wise operations and broadcasting (shapes, the rules, a shape table).
+  2. Write the first RED test in `core/src/test/kotlin/llm/ch01/s2/` (for example `a + b` for two tensors of the same
+     shape), with a skeleton in `Tensor.kt` inside `// <exercise ch01-s2>` markers.
+  3. Create `core/sections/ch01-s2/START.md`, `core/src/main/kotlin/llm/ch01/s2/Section2.kt`, and a site page stub
+     `site/src/content/docs/ch01/s2-....mdx` with `status: in-progress`.
 - **Open review points for the owner:** none.
+- **Owner's editor:** VS Code set up like IntelliJ (Kotlin by JetBrains, IntelliJ keymap, Islands Dark theme with
+  IntelliJ colours, JetBrains Mono). The owner runs tests with the VS Code task "Tests: section (solution)".
 
 Legend: `[x]` done (tests green, guide written, starter branch made), `[~]` in progress, `[ ]` not started.
 
@@ -31,7 +33,7 @@ Legend: `[x]` done (tests green, guide written, starter branch made), `[~]` in p
 
 ## Chapter 1 · Foundations (`core/`)
 
-- [~] ch01-s1 Tensor basics (all steps green; closing tasks open: START.md, demo, guide page, starter branch)
+- [x] ch01-s1 Tensor basics
 - [ ] ch01-s2 Element-wise operations and broadcasting
 - [ ] ch01-s3 Matrix multiplication and reductions
 - [ ] ch01-s4 Reverse-mode autograd
@@ -102,3 +104,11 @@ Legend: `[x]` done (tests green, guide written, starter branch made), `[~]` in p
 - Site: headings in JetBrains Mono, as on the owner's blog.
 - Docs for any coding agent: AGENTS.md (rules), docs/ (brief, workflow, decisions).
 - Next: close ch01-s1 (see "Current state and next action").
+
+### 2026-11-24 to 2026-11-25
+
+- Closed ch01-s1: `START.md`, a demo of the views, the `Snippet` site component, the guide page (TDD walkthrough of the
+  14 steps), and the branch `start/ch01-s1`.
+- VS Code set up like IntelliJ for the owner (extensions, keymap, theme, font, tasks, launch configurations). A secret
+  gist holds the setup.
+- Next: ch01-s2 (see "Current state and next action").

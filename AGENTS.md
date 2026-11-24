@@ -137,6 +137,8 @@ site/                       tutorial site; pages in site/src/content/docs/chNN/
 
 - Pages: `site/src/content/docs/chNN/sM-<slug>.md(x)`; chapter overview `chNN/index.md`.
 - Front matter `status: planned | in-progress | done`. `site/src/routeData.ts` turns it into sidebar badges.
+- Code on a page comes from the repository through `site/src/components/Snippet.astro` (usage in docs/WORKFLOW.md,
+  "Guide page template"). Never paste copies of repository code into a page.
 - Theme "Lab notebook" in `site/src/styles/theme.css`: warm paper, deep teal, Source Serif body, JetBrains Mono
   headings (700, letter-spacing -0.02em, as on the owner's blog), JetBrains Mono code.
 - Starlight 0.42.8 / Astro 7.4.4. Sidebar groups use `{ label, items: [{ autogenerate: { directory } }] }`.
