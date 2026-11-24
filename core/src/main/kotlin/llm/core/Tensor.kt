@@ -111,6 +111,13 @@ class Tensor(
         // </exercise>
     }
 
+    /** Element-wise sum: a new tensor where each element is `this[index] + other[index]`. */
+    operator fun plus(other: Tensor): Tensor {
+        // <exercise ch01-s2> Add the two tensors element by element into a new tensor.
+        TODO("ch01-s2: add two tensors element by element")
+        // </exercise>
+    }
+
     // <solution-only ch01-s1>
 
     /**
