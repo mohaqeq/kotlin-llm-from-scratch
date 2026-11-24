@@ -1,0 +1,385 @@
+---
+title: 1.1 Tensor basics
+description: Shape, size, strides, element access, and views that share the data, built test-first in 14 steps.
+status: done
+sidebar:
+  order: 1
+---
+
+import Snippet from '../../../components/Snippet.astro';
+
+export const T = 'core/src/main/kotlin/llm/core/Tensor.kt';
+export const B = 'core/src/test/kotlin/llm/ch01/s1/TensorBasicsTest.kt';
+export const P = 'core/src/test/kotlin/llm/ch01/s1/TensorPropertiesTest.kt';
+
+:::note[Start here]
+- **Command:** `./gradlew startSection -Psection=ch01-s1`. It resets `core/src/exercise` to the starter and shows 20 RED tests.
+- **Branch (alternative):** `git switch start/ch01-s1`
+- **Your file:** `core/src/exercise/kotlin/llm/core/Tensor.kt`
+- **Run the tests on your code:** `./gradlew :core:test -Pmode=exercise -Psection=ch01-s1`
+- **Prerequisites:** Kotlin classes, `IntArray`/`DoubleArray`, `vararg`, `require`, recursion. No earlier section.
+:::
+
+## What I build
+
+In this section I build `Tensor`, the n-dimensional array that every later chapter uses. When the section is
+complete, a tensor has:
+
+- a shape and a size, with checks for wrong data, negative dimensions and `Int` overflow,
+- row-major strides, and element access through them: `t[i, j]` and `t[i, j] = v`,
+- the factories `Tensor.zeros(...)` and `Tensor.ones(...)`,
+- views that share the data: `reshape` and `transpose`,
+- `contiguous()`, which copies a view into row-major order,
+- `toString()` in nested brackets.
+
+## The idea: storage and view
+
+A tensor has two parts:
+
+1. The **storage**: one flat `DoubleArray` with all values.
+2. The **view**: a shape and strides that tell how to read the flat array as n dimensions.
+
+The **stride** of a dimension is the number of positions that one step in that dimension moves in the storage.
+The position of an element is the dot product of its index with the strides:
+
+```text
+position(i, j, k) = i·strides[0] + j·strides[1] + k·strides[2]
+
+storage  [ 1  2  3  4  5  6 ]          view 1: shape [2, 3], strides [3, 1]    view 2: shape [3, 2], strides [1, 3]
+           0  1  2  3  4  5                      1 2 3                                   1 4
+                                                 4 5 6                                   2 5
+                                                                                         3 6
+```
+
+The same six numbers are a 2×3 matrix in view 1 and its transpose in view 2. No value moves. Only the strides change.
+
+| Tensor | Shape | Size | Row-major strides |
+|---|---|---|---|
+| scalar | `[]` | 1 | `[]` |
+| vector | `[5]` | 5 | `[1]` |
+| matrix | `[2, 3]` | 6 | `[3, 1]` |
+| batch of matrices | `[2, 3, 4]` | 24 | `[12, 4, 1]` |
+| empty | `[2, 0, 3]` | 0 | `[0, 3, 1]` |
+
+In the GPT, these views are everywhere. Attention changes `[batch, tokens, 768]` into `[batch, tokens, 12, 64]` with
+a reshape, and it computes `Q·Kᵀ` with a transpose. Both are free when they only change the view.
+
+## How to read the steps
+
+Each step has the same parts:
+
+1. **Test:** the test that I wrote first. Write it (or find it in the test file), and run it.
+2. **RED:** how the test failed when I wrote it. In the starter, every test first fails with
+   `NotImplementedError` from a `TODO()`.
+3. **Hint:** enough to start, not the answer.
+4. **Solution:** the code from the repository, in its final form after all refactors. Open it only when you are stuck.
+5. **Refactor:** what I changed after GREEN, and why.
+
+---
+
+## Step 1 · Size is the product of the dimensions
+
+<Snippet file={B} symbol='test("size is the product of all dimensions")' />
+
+**RED:** `kotlin.NotImplementedError` — `size` was a `TODO()`.
+
+**Hint:** multiply all entries of `shape`.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['val size: Int = run {', 'private fun sizeOf(']} />
+
+</details>
+
+My first GREEN was `shape.reduce { x, y -> x * y }`. It passed this test. The next test shows its bug.
+
+## Step 2 · A scalar has size 1
+
+<Snippet file={B} symbol='test("a scalar has an empty shape and size 1")' />
+
+**RED:** `java.lang.UnsupportedOperationException` — `reduce` cannot work on an empty array.
+
+**Hint:** a product of no numbers is 1, as a sum of no numbers is 0. Use a fold that starts at 1.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="private fun sizeOf(" doc />
+
+</details>
+
+**Refactor:** for a moment I returned `data.size` for an empty shape. That made the data decide its own size, so a
+check of the data against the size could never fail. The size must come from the shape alone. `fold(1)` does that.
+
+## Step 3 · The data length must match the shape
+
+<Snippet file={B} symbol='test("the data length must match the shape")' />
+
+**RED:** `AssertionFailedError: Expected exception java.lang.IllegalArgumentException but no exception was thrown.`
+
+**Hint:** the constructor is the only place where a tensor is made, so check the rule there, in an `init` block.
+`require(condition) { message }` throws `IllegalArgumentException`. `contentToString()` prints `[2, 3]`.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="init {" />
+
+</details>
+
+The message names the values: "Shape [2, 3] needs 6 values, but data has 5". A wrong tensor deep in a model is
+easy to find with such a message.
+
+## Step 4 · A negative dimension is rejected
+
+<Snippet file={B} symbol='test("a negative dimension is rejected")' />
+
+**RED:** no exception. `-2 × -3 = 6`, so the length check alone accepts this shape.
+
+**Hint:** check each dimension before you check the product.
+
+**Solution:** the first `require` in the `init` block of step 3.
+
+**Refactor:** I computed the size once, and with `Math.multiplyExact`. A shape such as `[65536, 65536]` overflows
+`Int` to 0, and then empty data would pass the length check. A test now fixes this behaviour:
+
+<Snippet file={B} symbol='test("a shape whose size overflows Int is rejected")' />
+
+## Step 5 · Row-major strides
+
+<Snippet file={B} symbol='test("row-major strides: the last dimension moves fastest")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** go from the last dimension to the first. The last stride is 1. Each stride is the next stride times the
+next dimension. Keep a running product.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="fun contiguousStrides(" doc />
+
+</details>
+
+**Refactor:** my first version was a getter that rebuilt the strides with lists on every call. Each read of
+`t.strides` then made new arrays. A stored value with one loop does the work once.
+
+## Step 6 · Read an element through the strides
+
+<Snippet file={B} symbol='test("an element is read through the strides")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** Kotlin turns `m[1, 2]` into `m.get(1, 2)` for an `operator fun get(vararg index: Int)`. The position is the
+dot product of the index with the strides.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['operator fun get(', 'private fun offsetOf(']} doc />
+
+</details>
+
+## Step 7 · A wrong index is rejected
+
+<Snippet file={B} symbol='test("a wrong index is rejected, not read from another position")' />
+
+**RED:** no exception. Without checks, `m[0, 3]` on a 2×3 matrix is position 3, and that is the value of `m[1, 0]`.
+In a neural network, such a bug shows only as bad loss values many steps later.
+
+**Hint:** two rules. The number of indices must equal the number of dimensions (`IllegalArgumentException`). Each
+index must be at least 0 and less than its dimension (`IndexOutOfBoundsException`, the type that Kotlin arrays use).
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="private fun positionOf(" doc />
+
+</details>
+
+**Refactor:** my first GREEN checked in one pass and summed in a second pass, and it had a `require` that could never
+fail. The checks and the sum now share one place.
+
+## Step 8 · Write an element
+
+<Snippet file={B} symbol='test("an element is written through the strides")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** `m[1, 2] = 9.0` becomes `m.set(1, 2, 9.0)`, so the signature is
+`operator fun set(vararg index: Int, value: Double)`. The last line of the test checks that a rejected write changed
+nothing.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="operator fun set(" doc />
+
+</details>
+
+**Refactor:** my GREEN copied the checks from `get`. I moved them into `positionOf` (step 7), so `get` and `set` are
+one line each, and the position formula has one home.
+
+## Step 9 · `zeros` and `ones`
+
+<Snippet file={B} symbol='test("zeros and ones make a tensor of the shape, filled with 0.0 or 1.0")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** put the factories in a `companion object` with `vararg shape: Int`, so `zeros()` is a scalar. A new
+`DoubleArray` already holds zeros.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['fun zeros(', 'fun ones(']} doc />
+
+</details>
+
+## Step 10 · `reshape` is a view
+
+<Snippet file={B} symbol='test("reshape makes a view with a new shape that shares the data")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** the constructor already does the work, and it also checks that the size stays the same.
+
+My first GREEN was `Tensor(newShape, data)`. It is correct only while every tensor is contiguous. Step 13 shows the
+problem, and the final code is there.
+
+## Step 11 · `transpose` swaps strides
+
+Before this step, the strides were always computed from the shape. A transposed view needs other strides, so I made
+them a constructor parameter, with row-major strides as the default:
+
+<Snippet file={T} symbol="class Tensor(" title="Tensor.kt — constructor" />
+
+<Snippet file={B} symbol='test("transpose swaps two dimensions by swapping their strides, without a copy")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** the two numbers are dimension numbers, not sizes. Swap the two entries in a **copy** of the shape and in a
+copy of the strides, and share the data. The test checks that the original stays unchanged.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['fun transpose(', 'private fun IntArray.swapped(']} doc />
+
+</details>
+
+**Refactor:** a clear `swapped` helper replaced a swap trick that was written twice, and a new test fixes the
+`require` for unknown dimension numbers:
+
+<Snippet file={B} symbol='test("transpose rejects a dimension number that the tensor does not have")' />
+
+## Step 12 · `contiguous()` copies a view into row-major order
+
+<Snippet file={B} symbol='test("contiguous copies a view into row-major order; a contiguous tensor returns itself")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** a tensor is contiguous when its strides equal `contiguousStrides(shape)`. Then return `this`. Else, for each
+output position `n`, find the index of `n` with the **row-major** strides (`/` and `%`), and read the value at that
+index through the tensor's **own** strides.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['val isContiguous', 'fun contiguous()']} doc />
+
+</details>
+
+My first attempt went the other way: it walked through the storage and divided by the tensor's own strides. That
+fails for a transpose, because its strides `[1, 3]` do not decrease from left to right. Always loop over the output,
+and gather from the input.
+
+## Step 13 · `reshape` of a non-contiguous view
+
+<Snippet file={B} symbol='test("reshape of a non-contiguous view keeps the row-major order of the view")' />
+
+**RED:** this time a real bug from step 10:
+
+```text
+expected:<[1.0, 4.0, 2.0, 5.0, 3.0, 6.0]> but was:<[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]>
+```
+
+**Hint:** reshape keeps the row-major order of the **view**. Bring the data into that order first. The fix is one
+word.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol="fun reshape(" doc />
+
+</details>
+
+A contiguous tensor still reshapes without a copy, because `contiguous()` returns `this`. PyTorch has the same split:
+`view()` refuses a non-contiguous tensor, and `reshape()` copies when it must.
+
+## Step 14 · `toString()`
+
+<Snippet file={B} symbol='test("toString prints nested brackets in the order of the view")' />
+
+**RED:** `kotlin.NotImplementedError`.
+
+**Hint:** one pair of brackets per dimension. A recursive helper knows the current dimension and the current position
+in the storage. After the last dimension, it prints one value.
+
+<details>
+<summary>Solution</summary>
+
+<Snippet file={T} symbol={['override fun toString()', 'private fun render(']} doc />
+
+</details>
+
+The helper always moves through the strides, so a transposed view prints its own order without a copy.
+
+## Property tests
+
+Examples check the cases that I thought of. Property tests check rules on 1000 random tensors each: 0 to 4
+dimensions, lengths 0 to 4, and often a transposed view that is not contiguous.
+
+<Snippet file={P} symbol={['private fun tensors(', 'private val views:']} doc title="TensorPropertiesTest.kt — generators" />
+
+<Snippet file={P} symbol='test("contiguous keeps every value and gives row-major strides")' />
+
+The other three properties: a double transpose gives back the original view, a transpose reads each element with the
+two indices swapped, and a reshape to one dimension and back keeps every element. All four passed at once, so the
+random tensors found no new bug.
+
+## Run it
+
+```sh
+./gradlew :core:run -Psection=1
+```
+
+```text
+== ch01-s1: Tensor basics ==
+t                  = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]
+  shape [2, 3], strides [3, 1], size 6
+t.transpose(0, 1)  = [[1.0, 4.0], [2.0, 5.0], [3.0, 6.0]]
+  strides [1, 3], contiguous: false, same data: true
+t.reshape(3, 2)    = [[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]]
+tt.reshape(6)      = [1.0, 4.0, 2.0, 5.0, 3.0, 6.0]   (a copy: tt is not contiguous)
+after t[0, 1] = 20.0, the view tt is [[1.0, 4.0], [20.0, 5.0], [3.0, 6.0]]
+```
+
+The last line shows the shared storage: a write to `t` is visible in its transpose. With `-Pmode=exercise`, the demo
+prints the first `TODO` that your code still has.
+
+## Exercises
+
+1. Add `Tensor.full(value: Double, vararg shape: Int)`. Write the test first.
+2. Generalise `transpose` to `permute(vararg dims: Int)`. Add a property test: a permutation followed by its inverse
+   gives back the original view.
+3. Add `unsqueeze(dim)`, which inserts a dimension of length 1 as a view. Which stride does the new dimension need?
+   Does the value matter?
+4. Make `toString()` shorten large tensors: show the first and last three entries of each long dimension, with `...`.
+
+## Source
+
+- Code: [core/src/main/kotlin/llm/core/Tensor.kt](https://github.com/mohaqeq/kotlin-llm-from-scratch/blob/main/core/src/main/kotlin/llm/core/Tensor.kt)
+- Tests: [core/src/test/kotlin/llm/ch01/s1/](https://github.com/mohaqeq/kotlin-llm-from-scratch/tree/main/core/src/test/kotlin/llm/ch01/s1)
+- Every TDD step: `git tag --list 'ch01-s1-*'`, then for example `git diff ch01-s1-step11-red ch01-s1-step11-green`.

@@ -1,0 +1,88 @@
+---
+/**
+ * Shows code taken directly from a repository file at build time, so the site never drifts from the code.
+ *
+ *   <Snippet file="core/src/main/kotlin/llm/core/Tensor.kt" symbol="fun transpose(" doc />
+ *   <Snippet file="core/src/test/kotlin/llm/ch01/s1/TensorBasicsTest.kt" symbol='test("a scalar' />
+ *
+ * - `symbol`: text in the first line of the block (one string, or a list of strings for several blocks).
+ *   A line that ends with "{" starts a block that ends at the "}" with the same indentation. Any other line
+ *   continues while the next lines are indented more (an expression body or a property with a getter).
+ * - `doc`: also show the KDoc comment above each block.
+ * Exercise markers (`// <exercise ...>`, `// <solution-only ...>` and their end lines) are not shown.
+ * The build fails when a symbol is not found, so a renamed function breaks the build, not the page.
+ */
+import { Code } from '@astrojs/starlight/components';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+interface Props {
+  file: string;
+  symbol: string | string[];
+  doc?: boolean;
+  title?: string;
+}
+
+const { file, symbol, doc = false, title } = Astro.props;
+const repo = 'https://github.com/mohaqeq/kotlin-llm-from-scratch/blob/main';
+// `astro build` and `astro dev` run in site/, so the repository root is one level up.
+const repoRoot = path.resolve(process.cwd(), '..');
+const lines = readFileSync(path.join(repoRoot, file), 'utf8').replace(/\r\n/g, '\n').split('\n');
+
+const indent = (line: string) => line.length - line.trimStart().length;
+const isMarker = (line: string) => /^\s*\/\/\s*<\/?(exercise|solution-only)\b/.test(line);
+
+function block(sym: string): { from: number; to: number } {
+  const start = lines.findIndex((l) => l.includes(sym));
+  if (start < 0) throw new Error(`Snippet: "${sym}" not found in ${file}`);
+  const base = indent(lines[start]);
+  let end = start;
+  if (/\{\s*$/.test(lines[start])) {
+    end++;
+    while (end < lines.length && !(indent(lines[end]) === base && lines[end].trim().startsWith('}'))) end++;
+  } else {
+    while (end + 1 < lines.length && lines[end + 1].trim() !== '' && indent(lines[end + 1]) > base) end++;
+    // A multi-line parameter list ends with ")" or ") {" at the base indentation.
+    if (end + 1 < lines.length && indent(lines[end + 1]) === base && lines[end + 1].trim().startsWith(')')) end++;
+  }
+  let from = start;
+  if (doc) {
+    while (from > 0 && /^\s*(\/\*\*|\*)/.test(lines[from - 1])) from--;
+  }
+  return { from, to: end };
+}
+
+const blocks = (Array.isArray(symbol) ? symbol : [symbol]).map(block);
+const parts = blocks.map(({ from, to }) => {
+  const body = lines.slice(from, to + 1).filter((l) => !isMarker(l));
+  const cut = Math.min(...body.filter((l) => l.trim() !== '').map(indent));
+  return body.map((l) => l.slice(cut)).join('\n');
+});
+const code = parts.join('\n\n');
+// One line range per block, for example "lines 18–22, 183–184". The link opens the first block.
+const ranges = blocks.map(({ from, to }) => (from === to ? `${from + 1}` : `${from + 1}–${to + 1}`));
+const href = `${repo}/${file}#L${blocks[0].from + 1}-L${blocks[0].to + 1}`;
+const lang = file.endsWith('.kts') || file.endsWith('.kt') ? 'kotlin' : path.extname(file).slice(1);
+---
+
+<div class="snippet">
+  <Code code={code} lang={lang} title={title ?? path.basename(file)} />
+  <a class="snippet-source" href={href}>{file} · {ranges.length === 1 && !ranges[0].includes('–') ? 'line' : 'lines'} {ranges.join(', ')} on GitHub</a>
+</div>
+
+<style>
+  .snippet {
+    margin-top: 1rem;
+  }
+  .snippet-source {
+    display: block;
+    margin-top: 0.25rem;
+    font-family: var(--sl-font-mono);
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+    text-decoration: none;
+  }
+  .snippet-source:hover {
+    color: var(--sl-color-accent);
+  }
+</style>
