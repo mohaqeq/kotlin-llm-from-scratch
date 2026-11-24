@@ -114,9 +114,12 @@ class Tensor(
     /** Element-wise sum: a new tensor where each element is `this[index] + other[index]`. */
     operator fun plus(other: Tensor): Tensor {
         // <exercise ch01-s2> Add the two tensors element by element into a new tensor.
-        require(shape.contentEquals(other.shape)) { "Shape is ${other.shape} but should be $shape" }
-
-        return Tensor(shape, DoubleArray(size) { contiguous().data[it] + other.contiguous().data[it] })
+        require(shape.contentEquals(other.shape)) {
+            "Shape is ${other.shape.contentToString()} but should be ${shape.contentToString()}"
+        }
+        val thisData = contiguous().data
+        val otherData = other.contiguous().data
+        return Tensor(shape.copyOf(), DoubleArray(size) { thisData[it] + otherData[it] })
         // </exercise>
     }
 

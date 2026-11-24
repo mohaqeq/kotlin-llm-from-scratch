@@ -1,7 +1,9 @@
 package llm.ch01.s2
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
 import llm.core.Tensor
 
 class ElementwiseTest : FunSpec({
@@ -27,5 +29,15 @@ class ElementwiseTest : FunSpec({
         (t + Tensor.ones(3, 2)).toString() shouldBe "[[2.0, 5.0], [3.0, 6.0], [4.0, 7.0]]"
         // Two views with the same strides: the sum must still follow the index order of the view.
         (t + t).toString() shouldBe "[[2.0, 8.0], [4.0, 10.0], [6.0, 12.0]]"
+    }
+
+    test("plus rejects tensors whose shapes do not fit, and the message names both shapes") {
+        val a = Tensor.zeros(2, 3)
+        val b = Tensor.zeros(2)
+
+        val error = shouldThrow<IllegalArgumentException> { a + b }
+
+        error.message shouldContain "[2, 3]"
+        error.message shouldContain "[2]"
     }
 })
