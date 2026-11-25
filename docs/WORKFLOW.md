@@ -30,7 +30,9 @@ In the examples, the section is `ch01-s1` and the module is `:core`. Replace the
    property initializer: it would break every earlier test.
 4. Add the test name to `sections/chNN-sM/START.md` ("Tests to make green, in order").
 5. Run the tests. Show the RED output to the owner.
-6. Run `./gradlew resetExercise`, then `./gradlew verifyExercise -Psection=ch01-s1`. Continue only if the exit code is 0.
+6. Run `./gradlew verifyExercise -Psection=<id>` for **every section of the chapter that has tests**. Continue only if
+   each exit code is 0. Then run `./gradlew resetExercise` **without** `-Psection`: `verifyExercise` leaves
+   `src/exercise` in the state of its section, but the committed state is the first section of the chapter.
 7. Commit locally and tag. **Do not push.**
 
    ```sh
@@ -46,7 +48,8 @@ In the examples, the section is `ch01-s1` and the module is `:core`. Replace the
 The owner writes the code in `src/main` and says "green". Then the agent:
 
 1. Reads the diff: `git diff core/src/main`.
-2. Runs the section tests, `resetExercise` and `verifyExercise`. Checks the exit codes.
+2. Runs the section tests and `verifyExercise` for every section of the chapter, checks the exit codes, and then runs
+   `./gradlew resetExercise` without `-Psection` as the last command before the commit.
 3. Reads the generated starter for leaks: new private helpers must be inside `solution-only` markers; no solution
    code outside markers. Fix marker placement directly (it changes no behaviour), and tell the owner.
 4. Commits, tags and pushes the step:
@@ -56,6 +59,7 @@ The owner writes the code in `src/main` and says "green". Then the agent:
    git commit -m "feat(ch01-s1): transpose two dimensions by swapping shape and strides"
    git tag ch01-s1-step11-green
    git push origin main ch01-s1-step11-red ch01-s1-step11-green
+   gh run watch "$(gh run list --workflow CI --limit 1 --json databaseId --jq '.[0].databaseId')" --exit-status
    ```
 
 5. Reviews the code for the owner: bugs first, then design, naming, performance, style. Explain why.

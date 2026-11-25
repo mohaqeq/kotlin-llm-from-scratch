@@ -106,6 +106,10 @@ site/                       tutorial site; pages in site/src/content/docs/chNN/
   - No nested markers.
 - After every change in `src/main`: run `./gradlew resetExercise` and commit `src/exercise` with it. CI fails when
   `src/exercise` differs from the generated starter.
+- **`verifyExercise -Psection=X` and `startSection` leave `src/exercise` in the starter state of X.** The committed
+  state is always the **first** section of each chapter. So the last command before `git commit` is
+  `./gradlew resetExercise` **without** `-Psection`. (This broke CI on three ch01-s2 pushes.)
+- After every push, check CI: `gh run list --limit 3`, or `gh run watch <id> --exit-status`.
 - `verifyExercise` rules: the starter compiles; tests of earlier sections pass; tests of the section fail, and only
   with `NotImplementedError` (directly, or as `Caused by:` of an assertion error, for example inside `shouldThrow`).
   In shell chains, check its **exit code**, never its output text, before you commit or push.
