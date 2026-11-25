@@ -126,6 +126,8 @@ site/                       tutorial site; pages in site/src/content/docs/chNN/
 - Kotlin compiler warnings are errors in `src/main` and `src/test` (not in the generated `src/exercise`).
 - Error messages name the values: `"Shape [2, 3] needs 6 values, but data has 5"`.
 - Public API has KDoc in STE. Prefer clear names over clever idioms.
+- Keep algorithms efficient: compute values once (for example, read `isContiguous` once per path) and avoid repeated
+  work or allocations in hot loops.
 
 ## Git conventions
 
