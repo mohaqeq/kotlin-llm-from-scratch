@@ -26,4 +26,14 @@ class BroadcastTest : FunSpec({
         error.message shouldContain "[2, 3]"
         error.message shouldContain "[2]"
     }
+
+    test("a dimension of 1 stretches to the other size, also to an empty dimension of 0") {
+        fun shape(vararg d: Int) = d
+
+        // 1 stretches to 0, as it stretches to any other size.
+        Tensor.broadcastShapes(shape(2, 0), shape(1)) shouldBe shape(2, 0)
+        Tensor.broadcastShapes(shape(1, 3), shape(0, 1)) shouldBe shape(0, 3)
+        // 0 and 3 are different, and neither is 1.
+        shouldThrow<IllegalArgumentException> { Tensor.broadcastShapes(shape(0), shape(3)) }
+    }
 })

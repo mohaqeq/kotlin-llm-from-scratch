@@ -37,6 +37,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s2/`.
 2. `ElementwiseTest > plus adds by index, also when an input is a view`
 3. `ElementwiseTest > plus rejects tensors whose shapes do not fit, and the message names both shapes`
 4. `BroadcastTest > broadcastShapes aligns the shapes from the right, and a dimension of 1 stretches`
+5. `BroadcastTest > a dimension of 1 stretches to the other size, also to an empty dimension of 0`
 
 ## Done when
 
