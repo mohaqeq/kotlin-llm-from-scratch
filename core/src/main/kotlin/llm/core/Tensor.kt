@@ -24,11 +24,28 @@ class Tensor(
     }
 
     init {
-        // <exercise ch01-s1> Reject a negative dimension.
-        require(shape.all { it >= 0 }) { "Shape must be non-negative but was ${shape.contentToString()}" }
+        // <exercise ch01-s1> Reject a negative dimension, then data whose length is not the size of the shape.
+        require(shape.all { it >= 0 }) { "Shape must be non-negative, but was ${shape.contentToString()}" }
         // </exercise>
         // <exercise ch01-s2> Row-major: data has exactly size values. Other strides: every reachable position is in data.
-        require(size == data.size) { "Shape ${shape.contentToString()} needs $size values, but data has ${data.size}" }
+        require(shape.size == strides.size) {
+            "Shape ${shape.contentToString()} has ${shape.size} dimensions, " +
+                "but strides ${strides.contentToString()} has ${strides.size}"
+        }
+        if (isContiguous) {
+            require(size == data.size) {
+                "Shape ${shape.contentToString()} needs $size values, but data has ${data.size}"
+            }
+        } else if (size > 0) {
+            require(strides.all { it >= 0 }) {
+                "Strides must be non-negative, but were ${strides.contentToString()}"
+            }
+            val maxPosition = shape.foldIndexed(0) { i, acc, v -> acc + strides[i] * (v - 1) }
+            require(maxPosition < data.size) {
+                "Shape ${shape.contentToString()} with strides ${strides.contentToString()} " +
+                    "reaches position $maxPosition, but data has ${data.size} values"
+            }
+        }
         // </exercise>
     }
 
@@ -127,7 +144,7 @@ class Tensor(
         // </exercise>
     }
 
-    // <solution-only ch01-s1>
+// <solution-only ch01-s1>
 
     /**
      * Text of the part of the tensor that starts at [position] in [data], from dimension [dim] inward.
@@ -139,9 +156,9 @@ class Tensor(
             render(dim + 1, position + i * strides[dim])
         }
     }
-    // </solution-only>
+// </solution-only>
 
-    // <solution-only ch01-s1>
+// <solution-only ch01-s1>
 
     /** Position of [index] in data; no checks. */
     private fun offsetOf(index: IntArray): Int =
@@ -161,7 +178,7 @@ class Tensor(
         }
         return offsetOf(index)
     }
-    // </solution-only>
+// </solution-only>
 
     companion object {
         /**
