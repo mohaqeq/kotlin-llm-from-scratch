@@ -38,6 +38,7 @@ Tests are in `core/src/test/kotlin/llm/ch01/s2/`.
 3. `ElementwiseTest > plus rejects tensors whose shapes do not fit, and the message names both shapes`
 4. `BroadcastTest > broadcastShapes aligns the shapes from the right, and a dimension of 1 stretches`
 5. `BroadcastTest > a dimension of 1 stretches to the other size, also to an empty dimension of 0`
+6. `BroadcastTest > a view with stride 0 reads the same values again, so it needs fewer values than its size`
 
 ## Done when
 

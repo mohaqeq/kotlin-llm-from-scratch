@@ -24,8 +24,10 @@ class Tensor(
     }
 
     init {
-        // <exercise ch01-s1> Reject a negative dimension, then data whose length is not the size of the shape.
+        // <exercise ch01-s1> Reject a negative dimension.
         require(shape.all { it >= 0 }) { "Shape must be non-negative but was ${shape.contentToString()}" }
+        // </exercise>
+        // <exercise ch01-s2> Row-major: data has exactly size values. Other strides: every reachable position is in data.
         require(size == data.size) { "Shape ${shape.contentToString()} needs $size values, but data has ${data.size}" }
         // </exercise>
     }

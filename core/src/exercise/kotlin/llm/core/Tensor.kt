@@ -22,7 +22,8 @@ class Tensor(
     }
 
     init {
-        TODO("ch01-s1: Reject a negative dimension, then data whose length is not the size of the shape.")
+        TODO("ch01-s1: Reject a negative dimension.")
+        TODO("ch01-s2: Row-major: data has exactly size values. Other strides: every reachable position is in data.")
     }
 
     /** Reads one element: `t[i, j, k]` is at position `i*strides[0] + j*strides[1] + k*strides[2]` in [data]. */

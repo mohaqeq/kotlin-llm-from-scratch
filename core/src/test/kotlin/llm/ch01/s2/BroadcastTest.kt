@@ -36,4 +36,18 @@ class BroadcastTest : FunSpec({
         // 0 and 3 are different, and neither is 1.
         shouldThrow<IllegalArgumentException> { Tensor.broadcastShapes(shape(0), shape(3)) }
     }
+
+    test("a view with stride 0 reads the same values again, so it needs fewer values than its size") {
+        // Shape [2, 3] over 3 values: stride 0 in dimension 0 repeats the row [1, 2, 3].
+        val v = Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0), strides = intArrayOf(0, 1))
+
+        v.size shouldBe 6
+        v.toString() shouldBe "[[1.0, 2.0, 3.0], [1.0, 2.0, 3.0]]"
+
+        // Strides that reach past the end of the data are still rejected: [1, 2] would be position 3 + 2 = 5.
+        val error = shouldThrow<IllegalArgumentException> {
+            Tensor(shape = intArrayOf(2, 3), data = doubleArrayOf(1.0, 2.0, 3.0), strides = intArrayOf(3, 1))
+        }
+        error.message shouldContain "[2, 3]"
+    }
 })
