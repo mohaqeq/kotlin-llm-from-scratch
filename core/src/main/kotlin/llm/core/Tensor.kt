@@ -193,7 +193,7 @@ class Tensor(
                     "Shape ${a.contentToString()} cannot broadcast with ${b.contentToString()}"
                 }
             }
-            return IntArray(maxDim) { i -> max(aAligned[i], bAligned[i]) }
+            return IntArray(maxDim) { i -> if (aAligned[i] == 1) bAligned[i] else aAligned[i] }
             // </exercise>
         }
 
