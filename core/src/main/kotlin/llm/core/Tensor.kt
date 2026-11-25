@@ -1,5 +1,7 @@
 package llm.core
 
+import kotlin.math.max
+
 /**
  * An n-dimensional array of Double values.
  *
@@ -183,7 +185,15 @@ class Tensor(
          */
         fun broadcastShapes(a: IntArray, b: IntArray): IntArray {
             // <exercise ch01-s2> Align the shapes from the right; equal dimensions or a 1 fit, else throw.
-            TODO("ch01-s2: compute the broadcast shape of two shapes")
+            val maxDim = max(a.size, b.size)
+            val aAligned = IntArray(maxDim - a.size) { 1 } + a
+            val bAligned = IntArray(maxDim - b.size) { 1 } + b
+            aAligned.forEachIndexed { i, v ->
+                require(v == 1 || bAligned[i] == 1 || v == bAligned[i]) {
+                    "Shape ${a.contentToString()} cannot broadcast with ${b.contentToString()}"
+                }
+            }
+            return IntArray(maxDim) { i -> max(aAligned[i], bAligned[i]) }
             // </exercise>
         }
 

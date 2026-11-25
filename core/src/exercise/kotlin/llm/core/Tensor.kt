@@ -1,5 +1,7 @@
 package llm.core
 
+import kotlin.math.max
+
 /**
  * An n-dimensional array of Double values.
  *
